@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/source code/source code android/Main/FoodApp_Android_18-11-2020/foodapp_android-master/app/src/main/res/layout-ar/activity_orderdetail.xml" value="0.24583333333333332" />
+        <entry key="..\:/source code/source code android/Main/FoodApp_Android_18-11-2020/foodapp_android-master/app/src/main/res/layout/activity_orderdetail.xml" value="0.24583333333333332" />
+        <entry key="..\:/ui android/foodapp_android-master/app/src/main/res/layout-ar/activity_yoursorderdetail.xml" value="0.24583333333333332" />
+        <entry key="..\:/ui android/foodapp_android-master/app/src/main/res/layout/activity_editprofile.xml" value="0.10416666666666667" />
+        <entry key="..\:/ui android/foodapp_android-master/app/src/main/res/layout/activity_foodorderdetail.xml" value="0.264" />
+        <entry key="..\:/ui android/foodapp_android-master/app/src/main/res/layout/activity_yoursorderdetail.xml" value="0.2" />
+        <entry key="..\:/ui android/foodapp_android-master/app/src/main/res/layout/fragment_home.xml" value="0.24583333333333332" />
+        <entry key="..\:/ui android/foodapp_android-master/app/src/main/res/layout/row_foodcategory.xml" value="0.24583333333333332" />
+        <entry key="..\:/ui android/foodapp_android-master/app/src/main/res/layout/row_foodsubcategory.xml" value="0.24583333333333332" />
+        <entry key="..\:/ui android/foodapp_android-master/app/src/main/res/layout/row_orderdelivery.xml" value="0.2" />
+        <entry key="..\:/ui android/foodapp_android-master/app/src/main/res/layout/row_orderitemsummary.xml" value="0.24583333333333332" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
