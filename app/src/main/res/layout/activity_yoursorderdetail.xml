@@ -466,7 +466,7 @@
                         android:layout_marginLeft="@dimen/_10sdp"
                         android:layout_marginRight="@dimen/_10sdp"
                         android:background="@drawable/bg_editfield">
-                        <EditText
+                        <TextView
                             android:id="@+id/edAddress"
                             fontPath="@string/font_medium"
                             android:layout_width="match_parent"

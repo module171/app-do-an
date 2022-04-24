@@ -23,10 +23,6 @@ import com.foodapp.app.api.*
 import com.foodapp.app.api.ApiClient.MapKey
 import com.foodapp.app.base.BaseActivity
 import com.foodapp.app.base.BaseAdaptor
-import com.foodapp.app.model.GetPromocodeModel
-import com.foodapp.app.model.OrderSummaryModel
-import com.foodapp.app.model.PromocodeModel
-import com.foodapp.app.model.SummaryModel
 import com.foodapp.app.utils.Common
 import com.foodapp.app.utils.Common.alertErrorOrValidationDialog
 import com.foodapp.app.utils.Common.dismissLoadingProgress
@@ -35,6 +31,8 @@ import com.foodapp.app.utils.SharePreference.Companion.getStringPref
 import com.foodapp.app.utils.SharePreference.Companion.isCurrancy
 import com.foodapp.app.utils.SharePreference.Companion.userId
 import com.bumptech.glide.Glide
+import com.foodapp.app.model.*
+import com.foodapp.app.sqlite.DatabaseHandler
 import com.foodapp.app.utils.SharePreference
 import com.foodapp.app.utils.SharePreference.Companion.isMaximum
 import com.foodapp.app.utils.SharePreference.Companion.isMiniMum
@@ -70,6 +68,7 @@ class OrderSummuryActivity:BaseActivity() {
     var postal_code=""
     var AUTOCOMPLETE_REQUEST_CODE: Int = 2
     var fieldSelector: FieldSelector? = null
+    var dbHelper =  DatabaseHandler(this)
     override fun setLayout(): Int {
        return R.layout.activity_yoursorderdetail
     }
@@ -85,9 +84,9 @@ class OrderSummuryActivity:BaseActivity() {
         }else{
             alertErrorOrValidationDialog(this@OrderSummuryActivity,resources.getString(R.string.no_internet))
         }
-//        edAddress.setOnClickListener {
-//            getLocation()
-//        }
+        edAddress.setOnClickListener {
+            getLocation()
+        }
         cvPickup.setOnClickListener {
             select_Delivery=2
             cvPickup.setCardBackgroundColor(resources.getColor(R.color.colorPrimary))
@@ -147,21 +146,7 @@ class OrderSummuryActivity:BaseActivity() {
                          this@OrderSummuryActivity,
                          "Please Select Address"
                      )
-                 }else if(edBuilding.text.toString() == ""){
-                     alertErrorOrValidationDialog(
-                         this@OrderSummuryActivity,
-                         "Door / flat No. is required"
-                     )
-                 }else if(edLandmark.text.toString() == ""){
-                     alertErrorOrValidationDialog(
-                         this@OrderSummuryActivity,
-                         "Landmark Type is required"
-                     )
-                 }else if(edPinCode.text.toString() == ""){
-                     alertErrorOrValidationDialog(
-                         this@OrderSummuryActivity,
-                         "Landmark Type is required"
-                     )
+
                  }else{
                      if(Common.isCheckNetwork(this@OrderSummuryActivity)){
                         val map=HashMap<String,String>()
@@ -255,8 +240,10 @@ class OrderSummuryActivity:BaseActivity() {
     private fun callApiOrderSummary() {
         Common.showLoadingProgress(this@OrderSummuryActivity)
         val map = HashMap<String, String>()
+        val map1 = HashMap<String, ArrayList<CartItemModel>>()
         map["user_id"] = getStringPref(this@OrderSummuryActivity,userId)!!
-        val call = ApiClient.getClient.setSummary(map)
+        map1.put("cartdata",dbHelper.viewCart())
+        val call = ApiClient.getClient.setSummary(map1)
         call.enqueue(object : Callback<RestSummaryResponse> {
             override fun onResponse(
                 call: Call<RestSummaryResponse>,
@@ -264,9 +251,21 @@ class OrderSummuryActivity:BaseActivity() {
             ) {
                 if (response.code() == 200) {
                     dismissLoadingProgress()
+
                     val restResponce: RestSummaryResponse = response.body()!!
                     if (restResponce.getStatus().equals("1")) {
+
                         if (restResponce.getData().size > 0) {
+//                            val foodCategoryList = restResponce.getData()
+
+//                            for (item:OrderSummaryModel in foodCategoryList){
+//
+//                                Common.showErrorFullMsg(this@OrderSummuryActivity,
+//                                    item.getAddons().get(0).getImages()?.size.toString()
+//                                )
+//
+//                            }
+
                             rvOrderItemFood.visibility = View.VISIBLE
                             val foodCategoryList = restResponce.getData()
                             val summary = restResponce.getSummery()
@@ -279,10 +278,11 @@ class OrderSummuryActivity:BaseActivity() {
                         rvOrderItemFood.visibility = View.GONE
                     }
                 }else{
-                    val error=JSONObject(response.errorBody()!!.string())
-                    val status=error.getInt("status")
+//                    val error=JSONObject(response.errorBody()!!.string())
+//                    val status=error.getInt("status")
                     Common.dismissLoadingProgress()
-                    Common.showErrorFullMsg(this@OrderSummuryActivity,error.getString("message"))
+                    Common.getLog("html",response.errorBody()!!.string())
+//                    Common.showErrorFullMsg(this@OrderSummuryActivity,response.errorBody()!!.string())
                 }
             }
 
@@ -290,7 +290,7 @@ class OrderSummuryActivity:BaseActivity() {
                 dismissLoadingProgress()
                 alertErrorOrValidationDialog(
                     this@OrderSummuryActivity,
-                    resources.getString(R.string.error_msg)
+                    t.message
                 )
             }
         })
@@ -422,7 +422,7 @@ class OrderSummuryActivity:BaseActivity() {
                     val tvNotes: TextView = holder.itemView.findViewById(R.id.tvNotes)
                     val tvAddons: TextView = holder.itemView.findViewById(R.id.tvAddons)
 
-                    Glide.with(this@OrderSummuryActivity).load(orderHistoryList.get(position).getItemimage().getImage())
+                    Glide.with(this@OrderSummuryActivity).load(orderHistoryList.get(position).getItemimage())
                         .placeholder(resources.getDrawable(R.drawable.placeholder)).centerCrop()
                         .into(ivFoodItem)
                     tvOrderFoodName.text = orderHistoryList.get(position).getItem_name()
@@ -551,7 +551,7 @@ class OrderSummuryActivity:BaseActivity() {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == AutocompleteActivity.RESULT_OK) {
                 val place = Autocomplete.getPlaceFromIntent(data!!)
-//                edAddress.text=place.getAddress()
+                edAddress.text=place.getAddress()
                 val latLng: String = place.latLng.toString()
                 val tempArray = latLng.substring(latLng.indexOf("(") + 1, latLng.lastIndexOf(")")).split(",")
                         .toTypedArray()
@@ -593,6 +593,7 @@ class OrderSummuryActivity:BaseActivity() {
                 }*/
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                val status: Status = Autocomplete.getStatusFromIntent(data!!)
+                Common.getLog("api",status.statusMessage.toString())
                Common.showErrorFullMsg(this@OrderSummuryActivity,status.statusMessage.toString())
             } else if (resultCode == AutocompleteActivity.RESULT_CANCELED) {
                Common.getLog("Nice", " RESULT_CANCELED : AutoComplete Places")
@@ -602,68 +603,30 @@ class OrderSummuryActivity:BaseActivity() {
 
     private fun callApiCheckPinCode(hasmap: HashMap<String, String>) {
         Common.showLoadingProgress(this@OrderSummuryActivity)
-        val call = ApiClient.getClient.setCheckPinCode(hasmap)
-        call.enqueue(object : Callback<SingleResponse> {
-            override fun onResponse(
-                call: Call<SingleResponse>,
-                response: Response<SingleResponse>
-            ) {
-                if(response.code()==200){
-                    Common.dismissLoadingProgress()
-                    val singleResponse: SingleResponse = response.body()!!
-                    if (singleResponse.getStatus()=="0") {
-                        edPinCode.setText("")
-                        Common.showErrorFullMsg(
-                            this@OrderSummuryActivity,
-                            singleResponse.getMessage()!!
-                        )
-                    }else if (singleResponse.getStatus()=="1") {
-
-                        Common.getLog("oder",summaryModel.getOrder_total()!!.toDouble().toString())
-                       if(summaryModel.getOrder_total()!!.toDouble()>getStringPref(this@OrderSummuryActivity,isMiniMum)!!.toDouble()&&summaryModel.getOrder_total()!!.toDouble()<getStringPref(this@OrderSummuryActivity,isMaximum)!!.toDouble()){
-                          val intent=Intent(this@OrderSummuryActivity,PaymentPayActivity::class.java)
-                          val strTotalCharge=tvOrderTotalCharge.text.toString().replace(getStringPref(this@OrderSummuryActivity,isCurrancy)!!,"")
-                          val strActuleCharge=strTotalCharge.replace(",","")
-                          val orderTax:Float=(summaryModel.getOrder_total()!!.toFloat()*summaryModel.getTax()!!.toFloat())/100
-                          intent.putExtra("getAmount",String.format(Locale.US,"%.2f", strActuleCharge.toDouble()))
-                          intent.putExtra("getAddress",edAddress.text.toString())
-                          intent.putExtra("getTax",summaryModel.getTax())
-                          intent.putExtra("getTaxAmount",String.format(Locale.US,"%.2f",orderTax))
-                          intent.putExtra("delivery_charge",String.format(Locale.US,"%.2f",summaryModel.getDelivery_charge()!!.toDouble()))
-                          intent.putExtra("promocode",tvPromoCodeApply.text.toString())
-                          intent.putExtra("discount_pr",discountPer)
-                          intent.putExtra("discount_amount",discountAmount)
-                          intent.putExtra("order_notes",edNotes.text.toString())
-                          intent.putExtra("lat",lat.toString())
-                          intent.putExtra("lon",lon.toString())
-                          intent.putExtra("order_type","1")
-                          intent.putExtra("building",edBuilding.text.toString())
-                          intent.putExtra("landmark",edLandmark.text.toString())
-                          intent.putExtra("pincode",edPinCode.text.toString())
-                          startActivity(intent)
-                       }else{
-                           alertErrorOrValidationDialog(this@OrderSummuryActivity,"Order amount must be between ${getStringPref(this@OrderSummuryActivity,isCurrancy)+getStringPref(this@OrderSummuryActivity,isMiniMum)} and ${getStringPref(this@OrderSummuryActivity,isCurrancy)+getStringPref(this@OrderSummuryActivity,isMaximum)}")
-                       }
-
-                    }
-                } else  {
-                    val error= JSONObject(response.errorBody()!!.string())
-                    dismissLoadingProgress()
-                    alertErrorOrValidationDialog(
-                        this@OrderSummuryActivity,
-                        error.getString("message")
-                    )
-                }
-            }
-
-            override fun onFailure(call: Call<SingleResponse>, t: Throwable) {
-                dismissLoadingProgress()
-                alertErrorOrValidationDialog(
-                    this@OrderSummuryActivity,
-                    resources.getString(R.string.error_msg)
-                )
-            }
-        })
+        if(summaryModel.getOrder_total()!!.toDouble()>1000&&summaryModel.getOrder_total()!!.toDouble()<1000000){
+            val intent=Intent(this@OrderSummuryActivity,PaymentPayActivity::class.java)
+            val strTotalCharge=tvOrderTotalCharge.text.toString().replace(getStringPref(this@OrderSummuryActivity,isCurrancy)!!,"")
+            val strActuleCharge=strTotalCharge.replace(",","")
+            val orderTax:Float=(summaryModel.getOrder_total()!!.toFloat()*summaryModel.getTax()!!.toFloat())/100
+            intent.putExtra("getAmount",String.format(Locale.US,"%.2f", strActuleCharge.toDouble()))
+            intent.putExtra("getAddress",edAddress.text.toString())
+            intent.putExtra("getTax",summaryModel.getTax())
+            intent.putExtra("getTaxAmount",String.format(Locale.US,"%.2f",orderTax))
+            intent.putExtra("delivery_charge",String.format(Locale.US,"%.2f",summaryModel.getDelivery_charge()!!.toDouble()))
+            intent.putExtra("promocode",tvPromoCodeApply.text.toString())
+            intent.putExtra("discount_pr",discountPer)
+            intent.putExtra("discount_amount",discountAmount)
+            intent.putExtra("order_notes",edNotes.text.toString())
+            intent.putExtra("lat",lat.toString())
+            intent.putExtra("lon",lon.toString())
+            intent.putExtra("order_type","1")
+//            intent.putExtra("building",edBuilding.text.toString())
+//            intent.putExtra("landmark",edLandmark.text.toString())
+//            intent.putExtra("pincode",edPinCode.text.toString())
+            startActivity(intent)
+        }else{
+            alertErrorOrValidationDialog(this@OrderSummuryActivity,"Order amount must be between ${getStringPref(this@OrderSummuryActivity,isCurrancy)+getStringPref(this@OrderSummuryActivity,isMiniMum)} and ${getStringPref(this@OrderSummuryActivity,isCurrancy)+getStringPref(this@OrderSummuryActivity,isMaximum)}")
+        }
     }
 
 

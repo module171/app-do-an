@@ -300,17 +300,31 @@
                     tools:ignore="MissingPrefix" />
             </LinearLayout>
 
+            <Button
+                android:id="@+id/btnhuy"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_above="@+id/ivArrow"
+                android:layout_below="@+id/llData"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="-157dp"
+                android:layout_marginEnd="50dp"
+                android:visibility="gone"
+                android:layout_marginBottom="125dp"
+
+                android:background="@color/light_orange"
+                android:text="Huy don hang" />
+
             <ImageView
+                android:id="@+id/ivArrow"
                 android:layout_width="@dimen/_25sdp"
                 android:layout_height="@dimen/_25sdp"
-                android:src="@drawable/ic_down_arrow"
-                android:padding="@dimen/_7sdp"
-                android:tint="@color/black"
-                android:id="@+id/ivArrow"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_centerInParent="true"
                 android:layout_below="@id/llData"
-               />
+                android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:padding="@dimen/_7sdp"
+                android:src="@drawable/ic_down_arrow"
+                android:tint="@color/black" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </RelativeLayout>

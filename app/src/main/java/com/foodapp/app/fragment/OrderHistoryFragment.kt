@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -16,6 +17,7 @@ import com.foodapp.app.activity.DashboardActivity
 import com.foodapp.app.activity.OrderDetailActivity
 import com.foodapp.app.api.ApiClient
 import com.foodapp.app.api.ListResponse
+import com.foodapp.app.api.SingleResponse
 import com.foodapp.app.base.BaseAdaptor
 import com.foodapp.app.base.BaseFragmnet
 import com.foodapp.app.model.OrderHistoryModel
@@ -24,6 +26,7 @@ import com.foodapp.app.utils.Common.alertErrorOrValidationDialog
 import com.foodapp.app.utils.Common.dismissLoadingProgress
 import com.foodapp.app.utils.Common.getDate
 import com.foodapp.app.utils.Common.showLoadingProgress
+import com.foodapp.app.utils.Common.showSuccessFullMsg
 import com.foodapp.app.utils.SharePreference
 import com.foodapp.app.utils.SharePreference.Companion.getStringPref
 import com.foodapp.app.utils.SharePreference.Companion.userId
@@ -36,6 +39,8 @@ import kotlin.collections.HashMap
 
 
 class OrderHistoryFragment : BaseFragmnet() {
+    var orderHistoryAdapter:BaseAdaptor<OrderHistoryModel>? =null
+   var orderHistoryList :ArrayList<OrderHistoryModel>?=ArrayList()
     override fun setView(): Int {
         return R.layout.fragment_orderhistory
     }
@@ -79,8 +84,8 @@ class OrderHistoryFragment : BaseFragmnet() {
                         if (restResponce.getData().size > 0) {
                             rvOrderHistory.visibility = View.VISIBLE
                             tvNoDataFound.visibility = View.GONE
-                            val foodCategoryList = restResponce.getData()
-                            setFoodCategoryAdaptor(foodCategoryList)
+                            orderHistoryList = restResponce.getData()
+                            setFoodCategoryAdaptor(orderHistoryList!!)
                         } else {
                             rvOrderHistory.visibility = View.GONE
                             tvNoDataFound.visibility = View.VISIBLE
@@ -103,9 +108,50 @@ class OrderHistoryFragment : BaseFragmnet() {
             }
         })
     }
+private fun callApideleteOrder(order_id:String?,pos:Int?){
+    showLoadingProgress(activity!!)
+    val map = HashMap<String, String>()
+    map.put("user_id", getStringPref(activity!!, userId)!!)
+    map.put("order_id", order_id!!)
+    val call = ApiClient.getClient.deleteOrder(map)
+    call.enqueue(object : Callback<SingleResponse> {
+        override fun onResponse(
+            call: Call<SingleResponse>,
+            response: Response<SingleResponse>
+        ) {
+            if (response.code() == 200) {
+                dismissLoadingProgress()
+                val restResponce: SingleResponse = response.body()!!
+                if (restResponce.getStatus().equals("1")) {
+                   showSuccessFullMsg(activity!!,
+                       "xoa don hang thanh cong")
+                    orderHistoryList!!.removeAt(pos!!)
+                    orderHistoryAdapter!!.notifyDataSetChanged()
 
+                } else if (restResponce.getStatus().equals("0")) {
+                    dismissLoadingProgress()
+                    alertErrorOrValidationDialog(
+                        activity!!,
+                       "xoa that bai"
+                    )
+                }
+            }
+        }
+
+        override fun onFailure(call: Call<SingleResponse>, t: Throwable) {
+            dismissLoadingProgress()
+            alertErrorOrValidationDialog(
+                activity!!,
+                resources.getString(R.string.error_msg)
+            )
+        }
+    })
+
+
+
+}
     fun setFoodCategoryAdaptor(orderHistoryList: ArrayList<OrderHistoryModel>) {
-        val orderHistoryAdapter =
+         orderHistoryAdapter =
             object : BaseAdaptor<OrderHistoryModel>(activity!!, orderHistoryList) {
                 @SuppressLint("SetTextI18n", "NewApi", "UseCompatLoadingForDrawables")
                 override fun onBindData(
@@ -122,7 +168,7 @@ class OrderHistoryFragment : BaseFragmnet() {
                     val llStatusImage: LinearLayout = holder.itemView.findViewById(R.id.llData)
                     val llStatusView: LinearLayout = holder.itemView.findViewById(R.id.llView)
                     val ivArrow: ImageView = holder.itemView.findViewById(R.id.ivArrow)
-
+                    val huydonhang:Button = holder.itemView.findViewById(R.id.btnhuy)
                     val tvOrderStatus1: TextView = holder.itemView.findViewById(R.id.tvOrderStatus1)
                     val tvOrderStatus2: TextView = holder.itemView.findViewById(R.id.tvOrderStatus2)
                     val tvOrderStatus3: TextView = holder.itemView.findViewById(R.id.tvOrderStatus3)
@@ -147,6 +193,7 @@ class OrderHistoryFragment : BaseFragmnet() {
                     if(orderHistoryList.get(position).getOrder_type().equals("1")){
                         view3.visibility=View.VISIBLE
                         v3.visibility=View.VISIBLE
+                        huydonhang.visibility=View.VISIBLE
                         ivStatus4.visibility=View.VISIBLE
                         tvOrderStatus4.visibility=View.VISIBLE
                         if(orderHistoryList[position].getStatus().equals("1")){
@@ -173,7 +220,7 @@ class OrderHistoryFragment : BaseFragmnet() {
 
                         }else if(orderHistoryList[position].getStatus().equals("2")) {
                             tvOrderStatus.text=resources.getString(R.string.order_ready)
-
+                            huydonhang.visibility=View.GONE
                             tvOrderStatus1.setTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))
                             tvOrderStatus2.setTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))
                             tvOrderStatus3.setTextColor(ContextCompat.getColor(activity!!,R.color.gray))
@@ -196,7 +243,7 @@ class OrderHistoryFragment : BaseFragmnet() {
                         }else if(orderHistoryList[position].getStatus().equals("3")){
                             tvOrderStatus.text=resources.getString(R.string.on_the_way)
 
-
+                            huydonhang.visibility=View.GONE
                             tvOrderStatus1.setTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))
                             tvOrderStatus2.setTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))
                             tvOrderStatus3.setTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))
@@ -218,7 +265,7 @@ class OrderHistoryFragment : BaseFragmnet() {
 
                         }else if(orderHistoryList.get(position).getStatus().equals("4")){
                             tvOrderStatus.text=resources.getString(R.string.order_delivered)
-
+                            huydonhang.visibility=View.GONE
                             tvOrderStatus1.setTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))
                             tvOrderStatus2.setTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))
                             tvOrderStatus3.setTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))
@@ -316,7 +363,13 @@ class OrderHistoryFragment : BaseFragmnet() {
                         llStatusView.visibility=View.GONE
                         ivArrow.rotation=360f
                     }
+                    huydonhang.setOnClickListener {
 
+
+                        callApideleteOrder(orderHistoryList.get(position).getId(),position)
+
+
+                    }
                     ivArrow.setOnClickListener {
                         if(orderHistoryList.get(position).isCheck()==true){
                             orderHistoryList.get(position).setCheck(false)

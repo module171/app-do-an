@@ -24,6 +24,7 @@ import com.foodapp.app.api.SingleResponse
 import com.foodapp.app.base.BaseActivity
 import com.foodapp.app.base.BaseAdaptor
 import com.foodapp.app.model.CartItemModel
+import com.foodapp.app.sqlite.DatabaseHandler
 import com.foodapp.app.utils.Common
 import com.foodapp.app.utils.Common.alertErrorOrValidationDialog
 import com.foodapp.app.utils.Common.dismissLoadingProgress
@@ -45,6 +46,8 @@ import kotlin.collections.HashMap
 class CartActivity : BaseActivity() {
     var cartItemAdapter:BaseAdaptor<CartItemModel>?=null
     var cartItem:ArrayList<CartItemModel>?=ArrayList()
+    var item_price:Double?=null
+    var dbHelper =  DatabaseHandler(this)
     override fun setLayout(): Int {
         return R.layout.activity_cart
     }
@@ -53,6 +56,7 @@ class CartActivity : BaseActivity() {
         getCurrentLanguage(this@CartActivity,false)
         tvCheckout.visibility = View.GONE
         if (isCheckNetwork(this@CartActivity)) {
+            Common.getLog("cart", dbHelper.viewCart().size.toString())
           callApiCart(false)
         } else {
           alertErrorOrValidationDialog(
@@ -89,43 +93,59 @@ class CartActivity : BaseActivity() {
         }
         val map = HashMap<String, String>()
         map.put("user_id", getStringPref(this@CartActivity, SharePreference.userId)!!)
-        val call = ApiClient.getClient.getCartItem(map)
-        call.enqueue(object : Callback<ListResponse<CartItemModel>> {
-            override fun onResponse(
-                call: Call<ListResponse<CartItemModel>>,
-                response: Response<ListResponse<CartItemModel>>
-            ) {
-                if (response.code() == 200) {
-                    dismissLoadingProgress()
-                    val restResponce: ListResponse<CartItemModel> = response.body()!!
-                    if (restResponce.getStatus().equals("1")) {
-                        if (restResponce.getData().size > 0) {
-                            rvCartFood.visibility = View.VISIBLE
-                            tvNoDataFound.visibility = View.GONE
-                            tvCheckout.visibility = View.VISIBLE
-                            cartItem=restResponce.getData()
-                            setFoodCartAdaptor(cartItem!!)
-                        } else {
-                            rvCartFood.visibility = View.GONE
-                            tvNoDataFound.visibility = View.VISIBLE
-                            tvCheckout.visibility = View.GONE
-                        }
-                    }
-                }else{
-                    dismissLoadingProgress()
-                    rvCartFood.visibility = View.GONE
-                    tvNoDataFound.visibility = View.VISIBLE
-                }
+        dismissLoadingProgress()
+//        val restResponce: ListResponse<CartItemModel> = response.body()!!
+//        if (restResponce.getStatus().equals("1")) {
+            if (dbHelper.viewCart().size > 0) {
+                rvCartFood.visibility = View.VISIBLE
+                tvNoDataFound.visibility = View.GONE
+                tvCheckout.visibility = View.VISIBLE
+                cartItem=dbHelper.viewCart()
+                setFoodCartAdaptor(cartItem!!)
+            } else {
+                rvCartFood.visibility = View.GONE
+                tvNoDataFound.visibility = View.VISIBLE
+                tvCheckout.visibility = View.GONE
             }
-
-            override fun onFailure(call: Call<ListResponse<CartItemModel>>, t: Throwable) {
-                dismissLoadingProgress()
-                alertErrorOrValidationDialog(
-                    this@CartActivity,
-                    resources.getString(R.string.error_msg)
-                )
-            }
-        })
+//        }
+//        val call = ApiClient.getClient.getCartItem(map)
+//
+//        call.enqueue(object : Callback<ListResponse<CartItemModel>> {
+//            override fun onResponse(
+//                call: Call<ListResponse<CartItemModel>>,
+//                response: Response<ListResponse<CartItemModel>>
+//            ) {
+//                if (response.code() == 200) {
+//                    dismissLoadingProgress()
+//                    val restResponce: ListResponse<CartItemModel> = response.body()!!
+//                    if (restResponce.getStatus().equals("1")) {
+//                        if (restResponce.getData().size > 0) {
+//                            rvCartFood.visibility = View.VISIBLE
+//                            tvNoDataFound.visibility = View.GONE
+//                            tvCheckout.visibility = View.VISIBLE
+//                            cartItem=restResponce.getData()
+//                            setFoodCartAdaptor(cartItem!!)
+//                        } else {
+//                            rvCartFood.visibility = View.GONE
+//                            tvNoDataFound.visibility = View.VISIBLE
+//                            tvCheckout.visibility = View.GONE
+//                        }
+//                    }
+//                }else{
+//                    dismissLoadingProgress()
+//                    rvCartFood.visibility = View.GONE
+//                    tvNoDataFound.visibility = View.VISIBLE
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<ListResponse<CartItemModel>>, t: Throwable) {
+//                dismissLoadingProgress()
+//                alertErrorOrValidationDialog(
+//                    this@CartActivity,
+//                    resources.getString(R.string.error_msg)
+//                )
+//            }
+//        })
     }
     @SuppressLint("ResourceType", "NewApi")
     private fun setFoodCartAdaptor(cartItemList: ArrayList<CartItemModel>) {
@@ -138,8 +158,8 @@ class CartActivity : BaseActivity() {
             ) {
                 holder!!.itemView.tvFoodName.text = cartItem!!.get(position).getItem_name()
                 holder.itemView.tvFoodPrice.text =Common.getCurrancy(this@CartActivity)+String.format(Locale.US,"%,.2f",cartItem!!.get(position).getPrice()!!.toDouble())
-                holder.itemView.tvFoodQty.text = cartItem!!.get(position).getQty()
-                Glide.with(this@CartActivity).load(cartItem!!.get(position).getItemimage()!!.getImage()).into( holder.itemView.ivFoodCart)
+                holder.itemView.tvFoodQty.text = cartItem!!.get(position).getQty().toString()
+                Glide.with(this@CartActivity).load(cartItem!!.get(position).getimage()).into( holder.itemView.ivFoodCart)
 
                 if(cartItem!!.get(position).getAddons_id().equals("")||cartItem!!.get(position).getAddons_id()==null){
                     holder.itemView.tvAddons.backgroundTintList= ColorStateList.valueOf(resources.getColor(R.color.gray))
@@ -157,7 +177,7 @@ class CartActivity : BaseActivity() {
                     Common.openDialogSelectedAddons(this@CartActivity,cartItem!!.get(position).getAddons())
                   }
                 }
-
+                  item_price=cartItem!!.get(position).getPrice()!!.toDouble()
                 holder.itemView.tvNotes.setOnClickListener {
                   if(cartItem!!.get(position).getItem_notes()!=null){
                     Common.alertNotesDialog(this@CartActivity,cartItem!!.get(position).getItem_notes())
@@ -166,7 +186,7 @@ class CartActivity : BaseActivity() {
 
                 holder.itemView.ivDeleteCartItem.setOnClickListener {
                   if (isCheckNetwork(this@CartActivity)) {
-                    dlgDeleteConformationDialog(this@CartActivity,"Are you sure delete cart item",cartItem!!.get(position).getId()!!,position)
+                    dlgDeleteConformationDialog(this@CartActivity,"Are you sure delete cart item",cartItem!!.get(position).getId()!!.toString(),position)
                   } else {
                     alertErrorOrValidationDialog(
                         this@CartActivity,
@@ -193,7 +213,7 @@ class CartActivity : BaseActivity() {
                   }
                 }
                 holder.itemView.ivPlus.setOnClickListener {
-                    if(cartItem!!.get(position).getQty()!!.toInt()<getStringPref(this@CartActivity,SharePreference.isMiniMumQty)!!.toInt()){
+                    if(cartItem!!.get(position).getQty()!!.toInt()<100){
                       if (isCheckNetwork(this@CartActivity)) {
                         callApiCartQTYUpdate(cartItemList.get(position),position,true)
                       } else {
@@ -233,75 +253,65 @@ class CartActivity : BaseActivity() {
             qty=cartModel.getQty()!!.toInt()-1
         }
         showLoadingProgress(this@CartActivity)
-        val map = HashMap<String, String>()
-        map.put("cart_id",cartModel.getId()!!)
-        map.put("item_id",cartModel.getItem_id()!!)
-        map.put("qty",qty.toString())
-        map.put("user_id", getStringPref(this@CartActivity, SharePreference.userId)!!)
-        val call = ApiClient.getClient.setQtyUpdate(map)
-        call.enqueue(object : Callback<SingleResponse> {
-            override fun onResponse(
-                call: Call<SingleResponse>,
-                response: Response<SingleResponse>
-            ) {
-                if (response.code() == 200) {
-                    val restResponce: SingleResponse = response.body()!!
-                    if(restResponce.getStatus().equals("1")){
-                        callApiCart(true)
-                    }else{
-                        dismissLoadingProgress()
-                    }
-                }
-            }
 
-            override fun onFailure(call: Call<SingleResponse>, t: Throwable) {
-                dismissLoadingProgress()
-                alertErrorOrValidationDialog(
-                    this@CartActivity,
-                    resources.getString(R.string.error_msg)
-                )
-            }
-        })
+
+
+        val map = HashMap<String, String>()
+//        map.put("cart_id",cartModel.getId()!!)
+//        map.put("item_id",cartModel.getItem_id()!!)
+        var status=dbHelper.updateCart(cartModel.getId().toString(),qty,(cartModel.getitemm_price()!!.toDouble() * qty).toString())
+        callApiCart(true)
+//        map.put("qty",qty.toString())
+//        map.put("user_id", getStringPref(this@CartActivity, SharePreference.userId)!!)
+//        val call = ApiClient.getClient.setQtyUpdate(map)
+//        call.enqueue(object : Callback<SingleResponse> {
+//            override fun onResponse(
+//                call: Call<SingleResponse>,
+//                response: Response<SingleResponse>
+//            ) {
+//                if (response.code() == 200) {
+//                    val restResponce: SingleResponse = response.body()!!
+//                    if(restResponce.getStatus().equals("1")){
+//                        callApiCart(true)
+//                    }else{
+//                        dismissLoadingProgress()
+//                    }
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<SingleResponse>, t: Throwable) {
+//                dismissLoadingProgress()
+//                alertErrorOrValidationDialog(
+//                    this@CartActivity,
+//                    resources.getString(R.string.error_msg)
+//                )
+//            }
+//        })
     }
     private fun callApiCartItemDelete(strCartId:String,pos:Int) {
         showLoadingProgress(this@CartActivity)
         val map = HashMap<String, String>()
+        val status=dbHelper.deleteCart(strCartId)
         map.put("cart_id",strCartId)
-        val call = ApiClient.getClient.setDeleteCartItem(map)
-        call.enqueue(object : Callback<SingleResponse> {
-            override fun onResponse(
-                call: Call<SingleResponse>,
-                response: Response<SingleResponse>
-            ) {
-                if (response.code() == 200) {
-                    dismissLoadingProgress()
-                    val restResponce: SingleResponse = response.body()!!
-                    if(restResponce.getStatus().equals("1")){
-                        Common.isCartTrue=true
-                        Common.isCartTrueOut=true
-                        Common.showSuccessFullMsg(this@CartActivity,restResponce.getMessage()!!)
-                        cartItem!!.removeAt(pos)
-                        cartItemAdapter!!.notifyDataSetChanged()
-                        if(cartItem!!.size>0){
-                            tvCheckout.visibility=View.VISIBLE
-                        }else{
-                            tvCheckout.visibility=View.GONE
-                            rvCartFood.visibility = View.GONE
-                            tvNoDataFound.visibility = View.VISIBLE
-                            tvCheckout.visibility = View.GONE
-                        }
-                    }
-                }
-            }
+        if (status!=-1) {
+            dismissLoadingProgress()
 
-            override fun onFailure(call: Call<SingleResponse>, t: Throwable) {
-                dismissLoadingProgress()
-                alertErrorOrValidationDialog(
-                    this@CartActivity,
-                    resources.getString(R.string.error_msg)
-                )
-            }
-        })
+
+                Common.isCartTrue=true
+                Common.isCartTrueOut=true
+                Common.showSuccessFullMsg(this@CartActivity,"xóa thành công")
+                cartItem!!.removeAt(pos)
+                cartItemAdapter!!.notifyDataSetChanged()
+                if(cartItem!!.size>0){
+                    tvCheckout.visibility=View.VISIBLE
+                }else{
+                    tvCheckout.visibility=View.GONE
+                    rvCartFood.visibility = View.GONE
+                    tvNoDataFound.visibility = View.VISIBLE
+                    tvCheckout.visibility = View.GONE
+                }
+
+        }
     }
 
     fun dlgDeleteConformationDialog(act: Activity, msg: String?,strCartId: String,pos:Int) {
@@ -398,44 +408,7 @@ class CartActivity : BaseActivity() {
     }
 
     private fun callApiIsOpen() {
-        showLoadingProgress(this@CartActivity)
-        val call = ApiClient.getClient.getCheckStatusRestaurant()
-        call.enqueue(object : Callback<SingleResponse> {
-            override fun onResponse(call: Call<SingleResponse>, response: Response<SingleResponse>) {
-                if (response.code() == 200) {
-                    val restResponce: SingleResponse = response.body()!!
-                    if (restResponce.getStatus().equals("1")) {
-                        dismissLoadingProgress()
-                        startActivity(Intent(this@CartActivity,OrderSummuryActivity::class.java))
-                    } else if (restResponce.getStatus()!!.equals("0")) {
-                        dismissLoadingProgress() 
-                        alertErrorOrValidationDialog(
-                            this@CartActivity,
-                            restResponce.getMessage()
-                        )
-                    }
-                }else{
+        startActivity(Intent(this@CartActivity,OrderSummuryActivity::class.java))
 
-                    dismissLoadingProgress()
-                    alertErrorOrValidationDialog(
-                        this@CartActivity,
-                        response.message().toString()
-                    )
-                     Log.e("loi",response.message().toString())
-                }
-
-
-
-
-            }
-
-            override fun onFailure(call: Call<SingleResponse>, t: Throwable) {
-                dismissLoadingProgress()
-                alertErrorOrValidationDialog(
-                    this@CartActivity,
-                    resources.getString(R.string.error_msg)
-                )
-            }
-        })
     }
 }

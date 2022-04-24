@@ -15,6 +15,7 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,10 +28,6 @@ import com.foodapp.app.api.RestResponse
 import com.foodapp.app.api.SingleResponse
 import com.foodapp.app.base.BaseActivity
 import com.foodapp.app.base.BaseAdaptor
-import com.foodapp.app.model.AddonsModel
-import com.foodapp.app.model.CartCountModel
-import com.foodapp.app.model.IngredientsModel
-import com.foodapp.app.model.ItemDetailModel
 import com.foodapp.app.utils.Common
 import com.foodapp.app.utils.Common.alertErrorOrValidationDialog
 import com.foodapp.app.utils.Common.isCheckNetwork
@@ -39,6 +36,8 @@ import com.foodapp.app.utils.SharePreference.Companion.getStringPref
 import com.foodapp.app.utils.SharePreference.Companion.isCurrancy
 import com.foodapp.app.utils.SharePreference.Companion.userId
 import com.bumptech.glide.Glide
+import com.foodapp.app.model.*
+import com.foodapp.app.sqlite.DatabaseHandler
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_foodorderdetail.*
 import kotlinx.android.synthetic.main.row_ingrediants.view.*
@@ -57,6 +56,7 @@ class FoodDetailActivity : BaseActivity() {
     var itemModel: ItemDetailModel? = null
     var listSeletecAddons = ArrayList<AddonsModel>()
     var qty = 0
+    internal var dbHelper =  DatabaseHandler(this)
     override fun setLayout(): Int {
         return R.layout.activity_foodorderdetail
     }
@@ -190,6 +190,7 @@ class FoodDetailActivity : BaseActivity() {
                     if(SharePreference.getBooleanPref(this@FoodDetailActivity,SharePreference.isLogin)){
                         if (isCheckNetwork(this@FoodDetailActivity)) {
                             callApiCartCount(true,false,"")
+                            dismissLoadingProgress()
                         } else {
                             alertErrorOrValidationDialog(this@FoodDetailActivity, resources.getString(R.string.no_internet))
                         }
@@ -200,7 +201,8 @@ class FoodDetailActivity : BaseActivity() {
                 }else{
                     if(SharePreference.getBooleanPref(this@FoodDetailActivity,SharePreference.isLogin)){
                         if (isCheckNetwork(this@FoodDetailActivity)) {
-                            callApiCartCount(true,false,"")
+//                            callApiCartCount(true,false,"")
+                            dismissLoadingProgress()
                         } else {
                             alertErrorOrValidationDialog(this@FoodDetailActivity, resources.getString(R.string.no_internet))
                         }
@@ -229,49 +231,37 @@ class FoodDetailActivity : BaseActivity() {
         val price = tvAddtoCart.text.toString().replace(resources.getString(R.string.addtocart)+" "+getStringPref(this@FoodDetailActivity, isCurrancy), "")
         val actulePrice=price.replace(",", "")
         Common.getLog("getPrice", actulePrice)
-        val map = HashMap<String, String>()
-        map.put("item_id", itemDetailModel.getId()!!)
-        map.put("addons_id",strAddonsGetId)
-        map.put("item_notes", edNotes.text.toString())
-        map.put("qty", tvFoodQty.text.toString())
-        map.put("price",String.format(Locale.US,"%.02f",actulePrice.toDouble()))
-        map.put("user_id", getStringPref(this@FoodDetailActivity, userId)!!)
-        val call = ApiClient.getClient.setAddToCart(map)
-        call.enqueue(object : Callback<SingleResponse> {
-            @SuppressLint("SetTextI18n")
-            override fun onResponse(
-                call: Call<SingleResponse>,
-                response: Response<SingleResponse>
-            ) {
-                val restResponce: SingleResponse = response.body()!!
-                if (isCheckNetwork(this@FoodDetailActivity)) {
-                    callApiCartCount(true,true, restResponce.getMessage()!!)
-                } else {
-                    alertErrorOrValidationDialog(this@FoodDetailActivity, resources.getString(R.string.no_internet))
-                }
-                if (response.code() == 200) {
-                    //val restResponce: SingleResponse = response.body()!!
-                    if (restResponce.getStatus().equals("1")) {
-                        val listAddos = ArrayList<AddonsModel>()
-                        setSelectedAddonsAdaptor(listAddos)
-                        edNotes.setText("")
-                        qty=0
-                        tvFoodQty.text = "1"
-                        tvAddtoCart.text = resources.getString(R.string.addtocart)+" "+ getStringPref(this@FoodDetailActivity, isCurrancy).plus(String.format(Locale.US,"%,.2f",itemModel!!.getItem_price()!!.toDouble()))
-                        listAddons.clear()
-                    }
-                } else {
-                    val error = JSONObject(response.errorBody()!!.string())
-                    alertErrorOrValidationDialog(
-                        this@FoodDetailActivity,
-                        error.getString("message")
-                    )
-                }
-            }
 
-            override fun onFailure(call: Call<SingleResponse>, t: Throwable) {
-            }
-        })
+        val cartmodel=CartItemModel(
+            Integer.parseInt(itemDetailModel.getId()!!),
+            Integer.parseInt(getStringPref(this@FoodDetailActivity, userId)!!),
+            itemDetailModel.getItem_name(),
+            itemDetailModel.getItem_price(),
+            itemDetailModel.getItem_price(),
+            strAddonsGetId,
+            Integer.parseInt(tvFoodQty.text.toString()),
+            edNotes.text.toString(),
+            intent.getStringExtra("itemimage")!!
+
+            );
+      var status= dbHelper.addCart(cartmodel)
+
+
+
+        if (isCheckNetwork(this@FoodDetailActivity)) {
+            callApiCartCount(true,true, "thêm giỏ hàng thành công")
+        } else {
+            alertErrorOrValidationDialog(this@FoodDetailActivity, resources.getString(R.string.no_internet))
+        }
+
+                val listAddos = ArrayList<AddonsModel>()
+                setSelectedAddonsAdaptor(listAddos)
+                edNotes.setText("")
+                qty=0
+                tvFoodQty.text = "1"
+                tvAddtoCart.text = resources.getString(R.string.addtocart)+" "+ getStringPref(this@FoodDetailActivity, isCurrancy).plus(String.format(Locale.US,"%,.2f",itemModel!!.getItem_price()!!.toDouble()))
+                listAddons.clear()
+
     }
 
     @SuppressLint("SetTextI18n", "NewApi")
@@ -288,20 +278,20 @@ class FoodDetailActivity : BaseActivity() {
             loadPagerImages(imagelistPlaceHolder!!)
         }
 
-        if (restResponce.getIngredients()!!.size > 0) {
-            rvIngredients.visibility = View.VISIBLE
-            tvNoDataFound.visibility = View.GONE
-            setItemIngrdiantsAdaptor(restResponce.getIngredients()!!)
-        } else {
-            rvIngredients.visibility = View.GONE
-            tvNoDataFound.visibility = View.VISIBLE
-        }
+//        if (restResponce.getIngredients()!!.size > 0) {
+//            rvIngredients.visibility = View.VISIBLE
+//            tvNoDataFound.visibility = View.GONE
+//            setItemIngrdiantsAdaptor(restResponce.getIngredients()!!)
+//        } else {
+//            rvIngredients.visibility = View.GONE
+//            tvNoDataFound.visibility = View.VISIBLE
+//        }
 
 
         tvFoodName.text = restResponce.getItem_name()
         tvFoodPrice.text = getStringPref(this@FoodDetailActivity, isCurrancy)+String.format(Locale.US,"%,.2f",restResponce.getItem_price()!!.toDouble())
         tvFoodType.text = restResponce.getCategory_name()
-        tvTime.text = restResponce.getDelivery_time()
+//        tvTime.text = restResponce.getDelivery_time()
         tvDetail.text = restResponce.getItem_description()
 
         tvAddtoCart.text = resources.getString(R.string.addtocart)+" ${getStringPref(
@@ -336,7 +326,7 @@ class FoodDetailActivity : BaseActivity() {
         }
 
         ivPlus.setOnClickListener {
-            if(qty<getStringPref(this@FoodDetailActivity,SharePreference.isMiniMumQty)!!.toInt()){
+            if(qty<100){
                 qty = qty + 1
                 tvFoodQty.text = qty.toString()
                 if (listSeletecAddons.size > 0) {
@@ -662,114 +652,41 @@ class FoodDetailActivity : BaseActivity() {
             Common.getLog("fisttime",isFristTime.toString())
             showLoadingProgress(this@FoodDetailActivity)
         }
-        val map = HashMap<String, String>()
-        map.put("user_id", SharePreference.getStringPref(this@FoodDetailActivity, SharePreference.userId)!!)
-        val call = ApiClient.getClient.getCartCount(map)
-        call.enqueue(object : Callback<CartCountModel> {
-            @SuppressLint("SetTextI18n")
-            override fun onResponse(
-                call: Call<CartCountModel>,
-                response: Response<CartCountModel>
-            ) {
-                if (response.code() == 200) {
-                    val restResponce: CartCountModel = response.body()!!
-                    if (restResponce.getStatus().equals("1")) {
-                        tvCount.text=restResponce.getCart()
-                        if(isQtyUpdate){
-                            Common.isCartTrueOut=true
-                            Common.showSuccessFullMsg(this@FoodDetailActivity,strMsg)
-                            dismissLoadingProgress()
-                        }else{
-                            dismissLoadingProgress()
-                        }
-                        Common.getLog("fisttime",isFristTime.toString())
-                        if(!isFristTime){
 
-                            timer = Timer()
-                            val handler = Handler()
-                            val Update = Runnable {
-                                if (currentPage == imagelist!!.size) {
-                                    currentPage = 0
-                                }
-                                viewPager.setCurrentItem(currentPage++, true)
-                            }
 
-                            if (imagelist!!.size == 1) {
-                                tabLayout.visibility = View.GONE
-                            }
-                            timer!!.schedule(object : TimerTask() {
-                                override fun run() {
-                                    handler.post(Update)
-                                }
-                            }, 4000, 3000)
-                        }
-                    } else if (restResponce.getStatus().equals("0")) {
-                        dismissLoadingProgress()
-                        tvCount!!.text = "0"
-                        if(isQtyUpdate){
-                            alertErrorOrValidationDialog(
-                                this@FoodDetailActivity,
-                                strMsg
-                            )
-                        }
-                        if(!isFristTime){
-                            timer = Timer()
-                            val handler = Handler(Looper.getMainLooper())
-                            val Update = Runnable {
-                                if (currentPage == imagelist!!.size) {
-                                    currentPage = 0
-                                }
-                                viewPager.setCurrentItem(currentPage++, true)
-                            }
 
-                            if (imagelist!!.size == 1) {
-                                tabLayout.visibility = View.GONE
-                            }
-                            timer!!.schedule(object : TimerTask() {
-                                override fun run() {
-                                    handler.post(Update)
-                                }
-                            }, 4000, 3000)
-                        }
-                    }
-
-                }else{
-                    val error= JSONObject(response.errorBody()!!.string())
+                tvCount.text=dbHelper.viewCart().size.toString()
+                if(isQtyUpdate){
+                    Common.isCartTrueOut=true
+                    Common.showSuccessFullMsg(this@FoodDetailActivity,strMsg)
                     dismissLoadingProgress()
-                    alertErrorOrValidationDialog(
-                        this@FoodDetailActivity,
-                        error.getString("message")
-                    )
-                    if(!isFristTime){
-                        timer = Timer()
-                        val handler = Handler()
-                        val Update = Runnable {
-                            if (currentPage == imagelist!!.size) {
-                                currentPage = 0
-                            }
-                            viewPager.setCurrentItem(currentPage++, true)
-                        }
-
-                        if (imagelist!!.size == 1) {
-                            tabLayout.visibility = View.GONE
-                        }
-                        timer!!.schedule(object : TimerTask() {
-                            override fun run() {
-                                handler.post(Update)
-                            }
-                        }, 4000, 3000)
-                    }
+                }else{
+                    dismissLoadingProgress()
                 }
-            }
+                Common.getLog("fisttime",isFristTime.toString())
+                if(!isFristTime){
 
-            override fun onFailure(call: Call<CartCountModel>, t: Throwable) {
-                dismissLoadingProgress()
-                alertErrorOrValidationDialog(
-                    this@FoodDetailActivity,
-                    resources.getString(R.string.error_msg)
-                )
-            }
-        })
+                    timer = Timer()
+                    val handler = Handler()
+                    val Update = Runnable {
+                        if (currentPage == imagelist!!.size) {
+                            currentPage = 0
+                        }
+                        viewPager.setCurrentItem(currentPage++, true)
+                    }
+
+                    if (imagelist!!.size == 1) {
+                        tabLayout.visibility = View.GONE
+                    }
+                    timer!!.schedule(object : TimerTask() {
+                        override fun run() {
+                            handler.post(Update)
+                        }
+                    }, 4000, 3000)
+                }
+
+
+
     }
 
     var dialog: Dialog? = null

@@ -17,6 +17,8 @@ import com.foodapp.app.R
 import com.foodapp.app.api.ApiClient
 import com.foodapp.app.api.SingleResponse
 import com.foodapp.app.base.BaseActivity
+import com.foodapp.app.model.Ordermodel
+import com.foodapp.app.sqlite.DatabaseHandler
 import com.foodapp.app.utils.*
 import com.foodapp.app.utils.Common.alertErrorOrValidationDialog
 import com.foodapp.app.utils.Common.dismissLoadingProgress
@@ -33,6 +35,8 @@ import com.stripe.android.model.Card
 import com.stripe.android.model.Token
 import com.stripe.android.view.CardMultilineWidget
 import kotlinx.android.synthetic.main.activity_payment.*
+import kotlinx.android.synthetic.main.activity_payment.ivBack
+import kotlinx.android.synthetic.main.activity_yoursorderdetail.*
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,10 +44,11 @@ import retrofit2.Response
 import java.util.*
 import kotlin.collections.HashMap
 
-
+import java.io.Serializable
 class PaymentPayActivity:BaseActivity(),PaymentResultListener,CallBackSuccess {
     var callBackSuccess:CallBackSuccess?=null
     var newStripeDataController:NewStripeDataController?=null
+    var dbHelper =  DatabaseHandler(this)
     override fun setLayout(): Int {
        return R.layout.activity_payment
     }
@@ -75,25 +80,29 @@ class PaymentPayActivity:BaseActivity(),PaymentResultListener,CallBackSuccess {
                 if (isCheckNetwork(this@PaymentPayActivity)) {
                     showLoadingProgress(this@PaymentPayActivity)
                     val hasmap = HashMap<String, String>()
-                    hasmap["user_id"] = getStringPref(this@PaymentPayActivity, userId)!!
-                    hasmap["order_total"] = intent.getStringExtra("getAmount")!!
-                    hasmap["razorpay_payment_id"] = ""
-                    hasmap["payment_type"] = "0"
-                    hasmap["address"] = intent.getStringExtra("getAddress")!!
-                    hasmap["promocode"] = intent.getStringExtra("promocode")!!
-                    hasmap["discount_amount"] = intent.getStringExtra("discount_amount")!!
-                    hasmap["discount_pr"] = intent.getStringExtra("discount_pr")!!
-                    hasmap["tax"] = intent.getStringExtra("getTax")!!
-                    hasmap["tax_amount"] = intent.getStringExtra("getTaxAmount")!!
-                    hasmap["delivery_charge"] = intent.getStringExtra("delivery_charge")!!
-                    hasmap["lat"] = intent.getStringExtra("lat")!!
-                    hasmap["lang"] = intent.getStringExtra("lon")!!
-                    hasmap["order_type"] = intent.getStringExtra("order_type")!!
-                    hasmap["order_notes"] = intent.getStringExtra("order_notes")!!
-                    hasmap["building"] = intent.getStringExtra("building")!!
-                    hasmap["landmark"] = intent.getStringExtra("landmark")!!
-                    hasmap["pincode"] = intent.getStringExtra("pincode")!!
-                    callApiOrder(hasmap)
+                    var user_id = getStringPref(this@PaymentPayActivity, userId)!!
+                  var  order_total = intent.getStringExtra("getAmount")!!
+                  var  payment_id = ""
+                  var payment_type = "0"
+                  var  address = intent.getStringExtra("getAddress")!!
+                    var promocode = intent.getStringExtra("promocode")!!
+                    var discount_amount = intent.getStringExtra("discount_amount")!!
+                    var discount_pr = intent.getStringExtra("discount_pr")!!
+                    var tax = intent.getStringExtra("getTax")!!
+                    var tax_amount = intent.getStringExtra("getTaxAmount")!!
+                    var delivery_charge = intent.getStringExtra("delivery_charge")!!
+                    var lat = intent.getStringExtra("lat")!!
+                 var   lang = intent.getStringExtra("lon")!!
+                  var order_type = intent.getStringExtra("order_type")!!
+                   var order_notes = intent.getStringExtra("order_notes")!!
+
+                    val ordermodel=Ordermodel(user_id,order_total,payment_id,
+                        payment_type,address,discount_amount,discount_pr,tax,
+                        tax_amount,delivery_charge,order_type,order_notes,lat,lang,dbHelper.viewCart())
+//                    hasmap["building"] = intent.getStringExtra("building")!!
+//                    hasmap["landmark"] = intent.getStringExtra("landmark")!!
+//                    hasmap["pincode"] = intent.getStringExtra("pincode")!!
+                    callApiOrder(ordermodel)
                 } else  {
                     alertErrorOrValidationDialog(
                         this@PaymentPayActivity,
@@ -101,8 +110,27 @@ class PaymentPayActivity:BaseActivity(),PaymentResultListener,CallBackSuccess {
                     )
                 }
             }else if(strGetData.equals("ONLINE PAY")){
-                showLoadingProgress(this@PaymentPayActivity)
-                startPayment()
+//                showLoadingProgress(this@PaymentPayActivity)
+                var user_id = getStringPref(this@PaymentPayActivity, userId)!!
+                var  order_total = intent.getStringExtra("getAmount")!!
+                var  payment_id = ""
+                var payment_type = "0"
+                var  address = intent.getStringExtra("getAddress")!!
+                var promocode = intent.getStringExtra("promocode")!!
+                var discount_amount = intent.getStringExtra("discount_amount")!!
+                var discount_pr = intent.getStringExtra("discount_pr")!!
+                var tax = intent.getStringExtra("getTax")!!
+                var tax_amount = intent.getStringExtra("getTaxAmount")!!
+                var delivery_charge = intent.getStringExtra("delivery_charge")!!
+                var lat = intent.getStringExtra("lat")!!
+                var   lang = intent.getStringExtra("lon")!!
+                var order_type = intent.getStringExtra("order_type")!!
+                var order_notes = intent.getStringExtra("order_notes")!!
+
+                val ordermodel=Ordermodel(user_id,order_total,payment_id,
+                    payment_type,address,discount_amount,discount_pr,tax,
+                    tax_amount,delivery_charge,order_type,order_notes,lat,lang)
+                vnpay(ordermodel)
             }else if(strGetData == "Stripe"){
                 successfulStripeDialog(this@PaymentPayActivity)
             }
@@ -133,6 +161,25 @@ class PaymentPayActivity:BaseActivity(),PaymentResultListener,CallBackSuccess {
             }
         }
     }
+
+
+    private fun vnpay(ordermodel: Ordermodel){
+        val intent=Intent(this@PaymentPayActivity,vnpayActivity::class.java)
+
+        intent.putExtra("ordermodel",ordermodel)
+
+        startActivity(intent)
+
+
+
+
+
+
+
+    }
+
+
+
 
     private fun startPayment() {
         Common.getLog("test",intent.getStringExtra("getAmount").toString())
@@ -202,13 +249,13 @@ class PaymentPayActivity:BaseActivity(),PaymentResultListener,CallBackSuccess {
            hasmap["building"] = intent.getStringExtra("building")!!
            hasmap["landmark"] = intent.getStringExtra("landmark")!!
            hasmap["pincode"] = intent.getStringExtra("pincode")!!
-           callApiOrder(hasmap)
+//           callApiOrder(hasmap)
         }catch (e: Exception){
             Log.e("Exception", "Exception in onPaymentSuccess", e)
         }
     }
 
-    fun callApiOrder(map: HashMap<String, String>){
+    fun callApiOrder(map:Ordermodel){
         val call = ApiClient.getClient.setOrderPayment(map)
         call.enqueue(object : Callback<SingleResponse> {
             override fun onResponse(
@@ -345,7 +392,7 @@ class PaymentPayActivity:BaseActivity(),PaymentResultListener,CallBackSuccess {
             hasmap["building"] = intent.getStringExtra("building")!!
             hasmap["landmark"] = intent.getStringExtra("landmark")!!
             hasmap["pincode"] = intent.getStringExtra("pincode")!!
-            callApiOrder(hasmap)
+//            callApiOrder(hasmap)
         }catch (e: Exception){
             Log.e("Exception", "Exception in onPaymentSuccess", e)
         }

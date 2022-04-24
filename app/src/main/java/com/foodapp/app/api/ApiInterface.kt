@@ -60,7 +60,8 @@ interface ApiInterface {
     //cart  Api 14
     @POST("cart")
     fun setAddToCart(@Body map: HashMap<String, String>):Call<SingleResponse>
-
+    @POST("deleteorder")
+    fun deleteOrder(@Body map: HashMap<String, String>):Call<SingleResponse>
     //QtyUpdate Api 15
     @POST("qtyupdate")
     fun setQtyUpdate(@Body map: HashMap<String, String>):Call<SingleResponse>
@@ -71,11 +72,11 @@ interface ApiInterface {
 
     //Summary Api 17
     @POST("summary")
-    fun setSummary(@Body map: HashMap<String, String>):Call<RestSummaryResponse>
+    fun setSummary(@Body map: HashMap<String, ArrayList<CartItemModel>>):Call<RestSummaryResponse>
 
     //OrderPayment Api 18
     @POST("order")
-    fun setOrderPayment(@Body map: HashMap<String, String>):Call<SingleResponse>
+    fun setOrderPayment(@Body map: Ordermodel):Call<SingleResponse>
 
     //forgotPassword Api 19
     @POST("forgotPassword")

@@ -8,15 +8,15 @@ class ItemDetailModel {
 
     private var item_price: String? = null
 
-    private var ingredients: ArrayList<IngredientsModel>?=null
+//    private var ingredients: ArrayList<IngredientsModel>?=null
 
-    private var addons: ArrayList<AddonsModel>?=null
+    private var topping: ArrayList<AddonsModel>?=null
 
     private var item_name: String? = null
 
     private var id: String? = null
 
-    private var delivery_time: String? = null
+//    private var delivery_time: String? = null
 
     private var item_description: String? = null
 
@@ -47,13 +47,13 @@ class ItemDetailModel {
         this.item_price = item_price
     }
 
-    fun getIngredients(): ArrayList<IngredientsModel>? {
-        return ingredients
-    }
-
-    fun setIngredients(ingredients: ArrayList<IngredientsModel>?) {
-        this.ingredients = ingredients
-    }
+//    fun getIngredients(): ArrayList<IngredientsModel>? {
+//        return ingredients
+//    }
+//
+//    fun setIngredients(ingredients: ArrayList<IngredientsModel>?) {
+//        this.ingredients = ingredients
+//    }
 
     fun getItem_name(): String? {
         return item_name
@@ -71,13 +71,13 @@ class ItemDetailModel {
         this.id = id
     }
 
-    fun getDelivery_time(): String? {
-        return delivery_time
-    }
-
-    fun setDelivery_time(delivery_time: String?) {
-        this.delivery_time = delivery_time
-    }
+//    fun getDelivery_time(): String? {
+//        return delivery_time
+//    }
+//
+//    fun setDelivery_time(delivery_time: String?) {
+//        this.delivery_time = delivery_time
+//    }
 
     fun getItem_description(): String? {
         return item_description
@@ -88,11 +88,11 @@ class ItemDetailModel {
     }
 
     fun getAddons(): ArrayList<AddonsModel> {
-        return addons!!
+        return topping!!
     }
 
     fun setAddons(addons: ArrayList<AddonsModel>?) {
-        this.addons = addons
+        this.topping = addons
     }
 
     fun getItem_status(): String? {

@@ -13,7 +13,7 @@ class OrderSummaryModel {
 
     private var id: String? = null
 
-    private var itemimage: FoodItemImageModel? = null
+    private var itemimage: String? = null
 
     private var item_notes: String? = null
 
@@ -71,11 +71,11 @@ class OrderSummaryModel {
         this.id = id
     }
 
-    fun getItemimage(): FoodItemImageModel {
+    fun getItemimage(): String{
         return itemimage!!
     }
 
-    fun setItemimage(itemimage: FoodItemImageModel) {
+    fun setItemimage(itemimage: String) {
         this.itemimage = itemimage
     }
 

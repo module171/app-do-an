@@ -37,6 +37,7 @@ import com.foodapp.app.utils.SharePreference.Companion.isCurrancy
 import com.foodapp.app.utils.SharePreference.Companion.isLinearLayoutManager
 import com.foodapp.app.utils.SharePreference.Companion.setStringPref
 import com.bumptech.glide.Glide
+import com.foodapp.app.sqlite.DatabaseHandler
 import com.foodapp.app.utils.SharePreference.Companion.isMaximum
 import com.foodapp.app.utils.SharePreference.Companion.isMiniMum
 import com.foodapp.app.utils.SharePreference.Companion.isMiniMumQty
@@ -68,6 +69,7 @@ class HomeFragment : BaseFragmnet() {
     var scrollView: NestedScrollView? = null
     var rlCount: RelativeLayout? = null
     var tvCount: TextView? = null
+    var dbHelper :DatabaseHandler?=null
     override fun setView(): Int {
         return R.layout.fragment_home
     }
@@ -148,6 +150,8 @@ class HomeFragment : BaseFragmnet() {
         }
 
         if (isAdded) {
+
+            dbHelper= DatabaseHandler(requireContext())
             scrollView!!.viewTreeObserver.addOnScrollChangedListener {
                 val view1 = scrollView!!.getChildAt(scrollView!!.getChildCount() - 1) as View
                 val diff: Int =
@@ -359,7 +363,8 @@ class HomeFragment : BaseFragmnet() {
                                 )
                             ) {
                                 if (isCheckNetwork(activity!!)) {
-//                                    callApiCartCount(true, false)
+                                    callApiCartCount(true, false)
+                                    dismissLoadingProgress()
                                 } else {
                                     alertErrorOrValidationDialog(
                                         activity!!,
@@ -401,7 +406,7 @@ class HomeFragment : BaseFragmnet() {
                 dismissLoadingProgress()
                 alertErrorOrValidationDialog(
                     activity!!,
-                    resources.getString(R.string.error_msg)
+                    t.message
                 )
             }
         })
@@ -521,12 +526,12 @@ class HomeFragment : BaseFragmnet() {
             if (fristTimeSelect) {
                 Log.e("A","fristTimeSelect1")
                 setFoodCategoryAdaptor()
-                if (bannerList != null) {
-                    rlBenner!!.visibility = View.VISIBLE
-                    loadPagerImages(bannerList!!)
-                } else {
-                    rlBenner!!.visibility = View.GONE
-                }
+//                if (bannerList != null) {
+//                    rlBenner!!.visibility = View.VISIBLE
+//                    loadPagerImages(bannerList!!)
+//                } else {
+//                    rlBenner!!.visibility = View.GONE
+//                }
             }
             foodAdapter = object : BaseAdaptor<FoodItemModel>(activity!!, foodList!!) {
                 @SuppressLint("NewApi", "ResourceType")
@@ -584,7 +589,10 @@ class HomeFragment : BaseFragmnet() {
                             Intent(
                                 activity!!,
                                 FoodDetailActivity::class.java
-                            ).putExtra("foodItemId", foodList!!.get(position).getId())
+                            ).putExtra("foodItemId", foodList!!.get(position).getId()).putExtra(
+                                "itemimage", foodList!!.get(position).getItemimage()!!.getImage()
+
+                            )
                         )
                     }
 
@@ -698,39 +706,12 @@ class HomeFragment : BaseFragmnet() {
         }
         val map = HashMap<String, String>()
         map.put("user_id", SharePreference.getStringPref(activity!!, SharePreference.userId)!!)
-        val call = ApiClient.getClient.getCartCount(map)
-        call.enqueue(object : Callback<CartCountModel> {
-            @SuppressLint("SetTextI18n")
-            override fun onResponse(
-                call: Call<CartCountModel>,
-                response: Response<CartCountModel>
-            ) {
-                if (response.code() == 200) {
-                    dismissLoadingProgress()
-                    val restResponce: CartCountModel = response.body()!!
-                    if (restResponce.getStatus().equals("0")) {
-                        tvCount!!.text = "0"
-                    } else {
-                        tvCount!!.text = restResponce.getCart()
-                    }
-                } else {
-                    val error = JSONObject(response.errorBody()!!.string())
-                    dismissLoadingProgress()
-                    alertErrorOrValidationDialog(
-                        activity!!,
-                        error.getString("message")
-                    )
-                }
-            }
 
-            override fun onFailure(call: Call<CartCountModel>, t: Throwable) {
-                dismissLoadingProgress()
-                alertErrorOrValidationDialog(
-                    activity!!,
-                    resources.getString(R.string.error_msg)
-                )
-            }
-        })
+            dismissLoadingProgress()
+
+                tvCount!!.text =dbHelper?.viewCart()?.size.toString()
+
+
     }
 
     private fun loadPagerImages(imageHase: ArrayList<BannerModel>) {
