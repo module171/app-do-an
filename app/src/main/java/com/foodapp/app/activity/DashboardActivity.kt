@@ -116,27 +116,8 @@ class DashboardActivity: BaseActivity() {
                 }
 
             }
-            R.id.rl_favourite->{
-                drawer_layout!!.closeDrawers()
-                if(SharePreference.getBooleanPref(this@DashboardActivity,SharePreference.isLogin)){
-                    if(temp!=3){
-                        setFragment(3)
-                        temp=3
-                    }
-                }else{
-                    openActivity(LoginActivity::class.java)
-                    finish()
-                }
 
-            }
-            R.id.rl_ratting -> {
-                drawer_layout!!.closeDrawers()
-                if(temp!=4){
-                    setFragment(4)
-                    temp=4
-                }
 
-            }
             R.id.rl_setting -> {
                 drawer_layout!!.closeDrawers()
                 if(temp!=5){

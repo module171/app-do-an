@@ -10,6 +10,7 @@ class SummaryModel {
     private var order_total: String? = null
 
     private var tax: String? = null
+    private var tax_amount: String? = null
 
     private var order_notes: String? = null
 
@@ -19,6 +20,16 @@ class SummaryModel {
 
     private var driver_profile_image: String? = null
 
+
+
+
+    fun gettax_amount(): String? {
+        return tax_amount
+    }
+
+    fun settax_amount(tax_amount: String?) {
+        this.tax_amount = tax_amount
+    }
     fun getDelivery_charge(): String? {
         return delivery_charge
     }

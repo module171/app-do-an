@@ -193,12 +193,12 @@ private fun callApideleteOrder(order_id:String?,pos:Int?){
                     if(orderHistoryList.get(position).getOrder_type().equals("1")){
                         view3.visibility=View.VISIBLE
                         v3.visibility=View.VISIBLE
-                        huydonhang.visibility=View.VISIBLE
+
                         ivStatus4.visibility=View.VISIBLE
                         tvOrderStatus4.visibility=View.VISIBLE
                         if(orderHistoryList[position].getStatus().equals("1")){
                             tvOrderStatus.text=resources.getString(R.string.order_place)
-
+                            huydonhang.visibility=View.VISIBLE
                             tvOrderStatus1.setTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))
                             tvOrderStatus2.setTextColor(ContextCompat.getColor(activity!!,R.color.gray))
                             tvOrderStatus3.setTextColor(ContextCompat.getColor(activity!!,R.color.gray))
@@ -265,7 +265,7 @@ private fun callApideleteOrder(order_id:String?,pos:Int?){
 
                         }else if(orderHistoryList.get(position).getStatus().equals("4")){
                             tvOrderStatus.text=resources.getString(R.string.order_delivered)
-                            huydonhang.visibility=View.GONE
+//                            huydonhang.visibility=View.GONE
                             tvOrderStatus1.setTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))
                             tvOrderStatus2.setTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))
                             tvOrderStatus3.setTextColor(ContextCompat.getColor(activity!!,R.color.colorPrimary))

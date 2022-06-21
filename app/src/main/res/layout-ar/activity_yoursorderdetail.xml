@@ -474,183 +474,63 @@
                         tools:ignore="MissingPrefix" />
 
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_10sdp"
-                        android:layout_marginRight="@dimen/_10sdp"
                         android:layout_marginBottom="@dimen/_10sdp"
-                        android:background="@drawable/bg_editfield"
-                        android:padding="@dimen/_10sdp">
+                        >
 
-                        <!-- <ImageView
-                             android:layout_width="@dimen/_20sdp"
-                             android:layout_height="@dimen/_20sdp"
-                             android:layout_gravity="center_vertical"
-                             android:layout_marginRight="@dimen/_10sdp"
-                             android:src="@drawable/ic_location"
-                             android:id="@+id/ivLocation"
-                             android:tint="@color/light_orange" />-->
+                        <LinearLayout
+                            android:layout_width="300dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_10sdp"
+                            android:layout_marginRight="@dimen/_10sdp"
+
+                            android:layout_marginBottom="@dimen/_10sdp"
+                            android:background="@drawable/bg_editfield"
+                            android:padding="@dimen/_10sdp">
+
+                            <EditText
+                                android:id="@+id/edAddress"
+                                fontPath="@string/font_medium"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:background="@android:color/transparent"
+                                android:editable="false"
+                                android:hint="Address"
+                                android:imeOptions="actionGo"
+                                android:inputType="textPersonName"
+                                android:textColor="@color/black"
+                                android:textSize="@dimen/_10ssp"
+                                tools:ignore="MissingPrefix" />
+
+                        </LinearLayout>
+
 
                         <TextView
-                            android:id="@+id/edAddress"
-                            fontPath="@string/font_medium"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:background="@android:color/transparent"
-                            android:gravity="start"
-                            android:hint="@string/delivery_address"
-                            android:imeOptions="actionGo"
-                            android:inputType="textMultiLine"
-                            android:textAlignment="viewStart"
-                            android:textColor="@color/black"
+                            android:id="@+id/tvMap"
+                            fontPath="@string/font_bold"
+                            android:layout_width="@dimen/_50sdp"
+                            android:layout_height="@dimen/_35sdp"
+                            android:layout_alignParentRight="true"
+
+                            android:layout_marginLeft="@dimen/_5sdp"
+
+                            android:background="@drawable/bg_editfield"
+                            android:backgroundTint="@color/light_orange"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/_10sdp"
+                            android:paddingRight="@dimen/_10sdp"
+                            android:text="Map"
+                            android:textColor="@color/white"
                             android:textSize="@dimen/_10ssp"
-                            tools:ignore="MissingPrefix" />
+                            tools:ignore="MissingPrefix,UnusedAttribute" />
+                    </RelativeLayout>
 
 
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/tvBuilding"
-                        fontPath="@string/font_bold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_10sdp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:text="Door / Flat No"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp"
-                        tools:ignore="MissingPrefix" />
 
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_10sdp"
-                        android:layout_marginRight="@dimen/_10sdp"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:background="@drawable/bg_editfield"
-                        android:padding="@dimen/_10sdp">
-
-
-                        <EditText
-                            android:id="@+id/edBuilding"
-                            fontPath="@string/font_medium"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:background="@android:color/transparent"
-                            android:editable="false"
-                            android:gravity="start"
-
-                            android:hint="Door / Flat no."
-                            android:imeOptions="actionGo"
-                            android:inputType="textPersonName"
-                            android:textAlignment="viewStart"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_10ssp"
-                            tools:ignore="MissingPrefix" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/tvLandmark"
-                        fontPath="@string/font_bold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_10sdp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:text="Landmark"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp"
-                        tools:ignore="MissingPrefix" />
-
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_10sdp"
-                        android:layout_marginRight="@dimen/_10sdp"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:background="@drawable/bg_editfield"
-                        android:padding="@dimen/_10sdp">
-
-
-                        <EditText
-                            android:id="@+id/edLandmark"
-                            fontPath="@string/font_medium"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:background="@android:color/transparent"
-                            android:editable="false"
-                            android:gravity="start"
-                            android:hint="Landmark"
-                            android:imeOptions="actionGo"
-                            android:inputType="textPersonName"
-                            android:textAlignment="viewStart"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_10ssp"
-                            tools:ignore="MissingPrefix" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/tvPincode"
-                        fontPath="@string/font_bold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_10sdp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:text="Pincode"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp"
-                        tools:ignore="MissingPrefix" />
-
-                    <!-- <TextView
-                         fontPath="@string/font_bold"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_marginLeft="@dimen/_10sdp"
-                         android:layout_marginTop="@dimen/_5sdp"
-                         android:layout_marginRight="@dimen/_10sdp"
-                         android:layout_marginBottom="@dimen/_10sdp"
-                         android:text="@string/message"
-                         android:textColor="@color/colorPrimary"
-                         android:textSize="@dimen/_12ssp"
-                         tools:ignore="MissingPrefix" />-->
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_10sdp"
-                        android:layout_marginRight="@dimen/_10sdp"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:background="@drawable/bg_editfield"
-                        android:padding="@dimen/_10sdp">
-
-                        <!-- <ImageView
-                             android:layout_width="@dimen/_20sdp"
-                             android:layout_height="@dimen/_20sdp"
-                             android:layout_gravity="center_vertical"
-                             android:layout_marginLeft="@dimen/_10sdp"
-                             android:src="@drawable/ic_location"
-                             android:id="@+id/ivLocation"
-                             app:tint="@color/light_orange" />-->
-
-                        <EditText
-                            android:id="@+id/edPinCode"
-                            fontPath="@string/font_medium"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:background="@android:color/transparent"
-                            android:gravity="start"
-                            android:hint="Pincode"
-                            android:textAlignment="viewStart"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_10ssp"
-                            tools:ignore="MissingPrefix" />
-                    </LinearLayout>
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

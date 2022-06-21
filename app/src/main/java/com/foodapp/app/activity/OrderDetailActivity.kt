@@ -114,16 +114,15 @@ class OrderDetailActivity:BaseActivity() {
                     tvNotes.text=response.getSummery()!!.getOrder_notes()
                 }
                 tvOrderAddress.text=response.getAddress()
-                edLandmark.text=response.getLandmark()
-                edBuilding.text=response.getBuilding()
-                tvOrderTotalPrice.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f",response.getSummery()!!.getOrder_total()!!.toDouble())
-                tvOrderTaxPrice.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f",response.getSummery()!!.getTax()!!.toDouble())
-                tvOrderDeliveryCharge.text=getStringPref(this@OrderDetailActivity,isCurrancy)+"0.00"
+
+                tvOrderTotalPrice.text=String.format(Locale.US,"%,.02f",response.getSummery()!!.getOrder_total()!!.toDouble())+' '+getStringPref(this@OrderDetailActivity,isCurrancy)
+                tvOrderTaxPrice.text=String.format(Locale.US,"%,.02f",response.getSummery()!!.getTax()!!.toDouble())+getStringPref(this@OrderDetailActivity,isCurrancy)
+                tvOrderDeliveryCharge.text="0.00"+getStringPref(this@OrderDetailActivity,isCurrancy)
                 val getTex:Float=(response.getSummery()!!.getOrder_total()!!.toFloat()*response.getSummery()!!.getTax()!!.toFloat())/100.toFloat()
                 tvTitleTex.text="Tax (${response.getSummery()!!.getTax()}%)"
-                tvOrderTaxPrice.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f", getTex)
+                tvOrderTaxPrice.text=String.format(Locale.US,"%,.02f", getTex)+getStringPref(this@OrderDetailActivity,isCurrancy)
                 val totalprice=response.getSummery()!!.getOrder_total()!!.toFloat()+getTex+0.00
-                tvOrderTotalCharge.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f", totalprice)
+                tvOrderTotalCharge.text=String.format(Locale.US,"%,.02f", totalprice)+getStringPref(this@OrderDetailActivity,isCurrancy)
             }else{
                 rlDiscount.visibility=View.VISIBLE
                 if(response.getSummery()!!.getOrder_notes()==null){
@@ -134,28 +133,27 @@ class OrderDetailActivity:BaseActivity() {
                     tvNotes.text=response.getSummery()!!.getOrder_notes()
                 }
                 tvOrderAddress.text=response.getAddress()
-                edLandmark.text=response.getLandmark()
-                edBuilding.text=response.getBuilding()
-                tvOrderTotalPrice.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f",response.getSummery()!!.getOrder_total()!!.toDouble())
-                tvOrderTaxPrice.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f",response.getSummery()!!.getTax()!!.toDouble())
-                tvOrderDeliveryCharge.text=getStringPref(this@OrderDetailActivity,isCurrancy)+"0.00"
+
+                tvOrderTotalPrice.text=String.format(Locale.US,"%,.02f",response.getSummery()!!.getOrder_total()!!.toDouble())+getStringPref(this@OrderDetailActivity,isCurrancy)
+                tvOrderTaxPrice.text=String.format(Locale.US,"%,.02f",response.getSummery()!!.getTax()!!.toDouble())+getStringPref(this@OrderDetailActivity,isCurrancy)
+                tvOrderDeliveryCharge.text="0.00"+getStringPref(this@OrderDetailActivity,isCurrancy)
 
                 val getTex:Float=(response.getSummery()!!.getOrder_total()!!.toFloat()*response.getSummery()!!.getTax()!!.toFloat())/100
                 tvTitleTex.text="Tax (${response.getSummery()!!.getTax()}%)"
-                tvOrderTaxPrice.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f", getTex)
+                tvOrderTaxPrice.text=String.format(Locale.US,"%,.02f", getTex)+getStringPref(this@OrderDetailActivity,isCurrancy)
 
-                tvDiscountOffer.text ="-"+getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f", response.getSummery()!!.getDiscount_amount()!!.toFloat())
+                tvDiscountOffer.text ="-"+String.format(Locale.US,"%,.02f", response.getSummery()!!.getDiscount_amount()!!.toFloat())+getStringPref(this@OrderDetailActivity,isCurrancy)
                 tvPromoCodeApply.text =response.getSummery()!!.getPromocode()
 
 
                 val subtotal=response.getSummery()!!.getOrder_total()!!.toFloat()-response.getSummery()!!.getDiscount_amount()!!.toFloat()
                 val totalprice=subtotal+getTex+0.00
-                tvOrderTotalCharge.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f", totalprice)
+                tvOrderTotalCharge.text=String.format(Locale.US,"%,.02f", totalprice)+getStringPref(this@OrderDetailActivity,isCurrancy)
             }
         }else{
             cvDeliveryAddress.visibility=View.VISIBLE
             //cvPinCode.visibility=View.VISIBLE
-            edPinCode.text=response.getPincode()
+
             if(intent.getStringExtra("order_status")!!.equals("3")||intent.getStringExtra("order_status")!!.equals("4")){
                 cvDriverInformation.visibility=View.VISIBLE
                 llCall.setOnClickListener {
@@ -174,7 +172,7 @@ class OrderDetailActivity:BaseActivity() {
 
             if(response.getSummery()!!.getPromocode()==null){
                 rlDiscount.visibility=View.GONE
-                if(response.getSummery()!!.getOrder_notes()==null){
+                if(response.getSummery()!!.getOrder_notes()=="rỗng"){
                     tvNotes.text=""
                     cvOrderNote.visibility=View.GONE
                 }else{
@@ -182,17 +180,16 @@ class OrderDetailActivity:BaseActivity() {
                     tvNotes.text=response.getSummery()!!.getOrder_notes()
                 }
                 tvOrderAddress.text=response.getAddress()
-                edLandmark.text=response.getLandmark()
-                edBuilding.text=response.getBuilding()
-                tvOrderTotalPrice.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f",response.getSummery()!!.getOrder_total()!!.toDouble())
-                tvOrderTaxPrice.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f",response.getSummery()!!.getTax()!!.toDouble())
-                tvOrderDeliveryCharge.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f",response.getSummery()!!.getDelivery_charge()!!.toDouble())
+               var order_price=response.getSummery()!!.getOrder_total()!!.toDouble()-response.getSummery()!!.gettax_amount()!!.toDouble()-response.getSummery()!!.getDelivery_charge()!!.toDouble()
+                tvOrderTotalPrice.text=String.format(Locale.US,"%,.02f",response.getSummery()!!.getOrder_total()!!.toDouble())+getStringPref(this@OrderDetailActivity,isCurrancy)
+                tvOrderTaxPrice.text=String.format(Locale.US,"%,.02f",response.getSummery()!!.gettax_amount()!!.toDouble())+getStringPref(this@OrderDetailActivity,isCurrancy)
+                tvOrderDeliveryCharge.text=String.format(Locale.US,"%,.02f",response.getSummery()!!.getDelivery_charge()!!.toDouble())+getStringPref(this@OrderDetailActivity,isCurrancy)
 
-                val getTex:Float=(response.getSummery()!!.getOrder_total()!!.toFloat()*response.getSummery()!!.getTax()!!.toFloat())/100.toFloat()
+                val getTex:Float=(response.getSummery()!!.getOrder_total()!!.toDouble().toFloat()*response.getSummery()!!.getTax()!!.toFloat())/100.toFloat()
                 tvTitleTex.text="Tax (${response.getSummery()!!.getTax()}%)"
-                tvOrderTaxPrice.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f", getTex)
-                val totalprice=response.getSummery()!!.getOrder_total()!!.toFloat()+getTex+response.getSummery()!!.getDelivery_charge()!!.toFloat()
-                tvOrderTotalCharge.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f", totalprice)
+                tvOrderTaxPrice.text=String.format(Locale.US,"%,.02f", getTex)+getStringPref(this@OrderDetailActivity,isCurrancy)
+                val totalprice=response.getSummery()!!.getOrder_total()!!.toDouble()+getTex+response.getSummery()!!.getDelivery_charge()!!.toFloat()
+                tvOrderTotalCharge.text=String.format(Locale.US,"%,.02f", totalprice)+getStringPref(this@OrderDetailActivity,isCurrancy)
             }else{
                 rlDiscount.visibility=View.VISIBLE
                 if(response.getSummery()!!.getOrder_notes()==null){
@@ -203,22 +200,21 @@ class OrderDetailActivity:BaseActivity() {
                     tvNotes.text=response.getSummery()!!.getOrder_notes()
                 }
                 tvOrderAddress.text=response.getAddress()
-                edLandmark.text=response.getLandmark()
-                edBuilding.text=response.getBuilding()
-                tvOrderTotalPrice.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f",response.getSummery()!!.getOrder_total()!!.toDouble())
-                tvOrderTaxPrice.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f",response.getSummery()!!.getTax()!!.toDouble())
-                tvOrderDeliveryCharge.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f",response.getSummery()!!.getDelivery_charge()!!.toDouble())
+
+                tvOrderTotalPrice.text=String.format(Locale.US,"%,.02f",response.getSummery()!!.getOrder_total()!!.toDouble())+getStringPref(this@OrderDetailActivity,isCurrancy)
+                tvOrderTaxPrice.text=String.format(Locale.US,"%,.02f",response.getSummery()!!.getTax()!!.toDouble())+getStringPref(this@OrderDetailActivity,isCurrancy)
+                tvOrderDeliveryCharge.text=String.format(Locale.US,"%,.02f",response.getSummery()!!.getDelivery_charge()!!.toDouble())+getStringPref(this@OrderDetailActivity,isCurrancy)
 
                 val getTex:Float=(response.getSummery()!!.getOrder_total()!!.toFloat()*response.getSummery()!!.getTax()!!.toFloat())/100
                 tvTitleTex.text="Tax (${response.getSummery()!!.getTax()}%)"
-                tvOrderTaxPrice.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f", getTex)
+                tvOrderTaxPrice.text=String.format(Locale.US,"%,.02f", getTex)+getStringPref(this@OrderDetailActivity,isCurrancy)
 
-                tvDiscountOffer.text ="-"+getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f", response.getSummery()!!.getDiscount_amount()!!.toFloat())
+                tvDiscountOffer.text ="-"+String.format(Locale.US,"%,.02f", response.getSummery()!!.getDiscount_amount()!!.toFloat())+getStringPref(this@OrderDetailActivity,isCurrancy)
                 tvPromoCodeApply.text =response.getSummery()!!.getPromocode()
 
                 val subtotal=response.getSummery()!!.getOrder_total()!!.toFloat()-response.getSummery()!!.getDiscount_amount()!!.toFloat()
                 val totalprice=subtotal+getTex+response.getSummery()!!.getDelivery_charge()!!.toFloat()
-                tvOrderTotalCharge.text=getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.02f", totalprice)
+                tvOrderTotalCharge.text=String.format(Locale.US,"%,.02f", totalprice)+getStringPref(this@OrderDetailActivity,isCurrancy)
             }
         }
 
@@ -241,7 +237,7 @@ class OrderDetailActivity:BaseActivity() {
                 val tvAddons: TextView = holder.itemView.findViewById(R.id.tvAddons)
 
                 tvOrderFoodName.text =orderHistoryList.get(position).getItem_name()
-                tvPrice.text = getStringPref(this@OrderDetailActivity,isCurrancy)+String.format(Locale.US,"%,.2f",orderHistoryList.get(position).getTotal_price()!!.toDouble())
+                tvPrice.text = String.format(Locale.US,"%,.2f",orderHistoryList.get(position).getprice_cart()!!.toDouble())+getStringPref(this@OrderDetailActivity,isCurrancy)
                 tvQtyNumber.text ="QTY : ${orderHistoryList.get(position).getQty()}"
 
                 Glide.with(this@OrderDetailActivity).load(orderHistoryList.get(position).getItemimage().getImage())
@@ -262,6 +258,7 @@ class OrderDetailActivity:BaseActivity() {
 
                 holder.itemView.tvAddons.setOnClickListener {
                     if(orderHistoryList.get(position).getAddons().size>0){
+
                         Common.openDialogSelectedAddons(this@OrderDetailActivity,orderHistoryList.get(position).getAddons())
                     }
                 }

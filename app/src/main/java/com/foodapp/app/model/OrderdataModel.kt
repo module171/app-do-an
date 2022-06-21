@@ -1,6 +1,6 @@
 package com.foodapp.app.model
 
-class CartItemModel {
+class OrderdataModel {
     private var itemimage: FoodItemImageModel? = null
     private var item_id: Int? = null
     private var price: String? = null
@@ -27,7 +27,7 @@ class CartItemModel {
         this.item_notes=item_notes
         this.item_price=item_price
 
-       this.addons=addons
+        this.addons=addons
     }
     constructor(item_id: Int?,user_id: Int?,item_name: String?,item_price: String?,price: String?,addons_id: String?,qty: Int?,item_notes: String?,image: String?){
 
@@ -40,7 +40,7 @@ class CartItemModel {
         this.qty=qty
         this.image=image
         this.item_notes=item_notes
-     this.item_price=item_price
+        this.item_price=item_price
 
     }
 
@@ -64,7 +64,7 @@ class CartItemModel {
     fun setUser_id(user_id:Int?){
 
 
-       this.user_id=user_id
+        this.user_id=user_id
     }
     fun getimage():String?{
 
@@ -147,5 +147,4 @@ class CartItemModel {
     fun setAddons_id(addons_id: String?) {
         this.addons_id = addons_id
     }
-
 }

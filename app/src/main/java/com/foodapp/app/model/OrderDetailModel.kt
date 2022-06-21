@@ -14,6 +14,7 @@ class OrderDetailModel {
     private var item_name: String? = null
 
     private var id: String? = null
+    private var price_cart: String? = null
 
     private var item_notes: String? = null
 
@@ -34,6 +35,13 @@ class OrderDetailModel {
         this.itemimage = itemimage
     }
 
+    fun getprice_cart(): String? {
+        return price_cart
+    }
+
+    fun setprice_cart(price_cart: String?) {
+        this.price_cart = price_cart
+    }
     fun getTotal_price(): String? {
         return total_price
     }

@@ -73,18 +73,19 @@
                     android:layout_marginTop="@dimen/_10sdp"
 
                     />
+
                 <TextView
+                    android:id="@+id/tvTitle"
+                    fontPath="@string/font_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pay By Cash"
-                    fontPath="@string/font_bold"
+                    android:layout_below="@id/ivMonay"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_15sdp"
-                    android:layout_marginLeft="@dimen/_10sdp"
+                    android:text="Pay By Cash"
                     android:textColor="@color/black"
-                    android:id="@+id/tvTitle"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@id/ivMonay"
                     android:textSize="@dimen/_12ssp"
                     tools:ignore="MissingPrefix" />
             </RelativeLayout>
@@ -104,7 +105,7 @@
                 <ImageView
                     android:layout_width="@dimen/_30sdp"
                     android:layout_height="@dimen/_30sdp"
-                    android:src="@drawable/ic_online"
+                    android:src="@drawable/vnpay"
                     android:id="@+id/ivCraditCard"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="@dimen/_10sdp"
@@ -112,7 +113,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Razorpay"
+                    android:text="VnPay"
                     fontPath="@string/font_bold"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_15sdp"
@@ -133,45 +134,7 @@
         android:layout_below="@id/llPayment"
         android:layout_marginTop="@dimen/_5sdp"
         >
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="5dp"
-            android:layout_weight="1"
-            android:id="@+id/cvStrip"
-            app:cardBackgroundColor="@color/white"
-            android:layout_marginTop="@dimen/_2sdp"
-            android:layout_marginBottom="@dimen/_2sdp"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_10sdp">
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <ImageView
-                    android:layout_width="@dimen/_30sdp"
-                    android:layout_height="@dimen/_30sdp"
-                    android:src="@drawable/ic_stripe"
-                    android:id="@+id/ivStrip"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="@dimen/_10sdp"
 
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Stripe"
-                    fontPath="@string/font_bold"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginBottom="@dimen/_15sdp"
-                    android:layout_marginLeft="@dimen/_10sdp"
-                    android:textColor="@color/black"
-                    android:id="@+id/tvStripTitle"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@id/ivStrip"
-                    android:textSize="@dimen/_12ssp"
-                    tools:ignore="MissingPrefix" />
-            </RelativeLayout>
-        </androidx.cardview.widget.CardView>
         <!--<androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

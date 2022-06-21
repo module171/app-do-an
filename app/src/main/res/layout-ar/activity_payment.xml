@@ -65,14 +65,14 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <ImageView
+                    android:id="@+id/ivMonay"
                     android:layout_width="@dimen/_30sdp"
                     android:layout_height="@dimen/_30sdp"
-                    android:src="@drawable/ic_cod"
-                    android:id="@+id/ivMonay"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="@dimen/_10sdp"
-                    />
+                    android:src="@drawable/ic_cod" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -101,14 +101,14 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <ImageView
+                    android:id="@+id/ivCraditCard"
                     android:layout_width="@dimen/_30sdp"
                     android:layout_height="@dimen/_30sdp"
-                    android:src="@drawable/ic_online"
-                    android:id="@+id/ivCraditCard"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="@dimen/_10sdp"
-                    />
+                    android:src="@drawable/vnpay" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -133,45 +133,7 @@
         android:layout_below="@id/llPayment"
         android:layout_marginTop="@dimen/_5sdp"
         >
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="5dp"
-            android:layout_weight="1"
-            android:id="@+id/cvStrip"
-            app:cardBackgroundColor="@color/white"
-            android:layout_marginTop="@dimen/_2sdp"
-            android:layout_marginBottom="@dimen/_2sdp"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_10sdp">
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <ImageView
-                    android:layout_width="@dimen/_30sdp"
-                    android:layout_height="@dimen/_30sdp"
-                    android:src="@drawable/ic_stripe"
-                    android:id="@+id/ivStrip"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="@dimen/_10sdp"
 
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Strip"
-                    fontPath="@string/font_bold"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_marginBottom="@dimen/_15sdp"
-                    android:layout_marginLeft="@dimen/_10sdp"
-                    android:textColor="@color/black"
-                    android:id="@+id/tvStripTitle"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@id/ivStrip"
-                    android:textSize="@dimen/_12ssp"
-                    tools:ignore="MissingPrefix" />
-            </RelativeLayout>
-        </androidx.cardview.widget.CardView>
     </LinearLayout>
     <TextView
         android:id="@+id/tvPaynow"

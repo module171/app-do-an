@@ -84,7 +84,7 @@ class OrderSummuryActivity:BaseActivity() {
         }else{
             alertErrorOrValidationDialog(this@OrderSummuryActivity,resources.getString(R.string.no_internet))
         }
-        edAddress.setOnClickListener {
+        tvMap.setOnClickListener {
             getLocation()
         }
         cvPickup.setOnClickListener {
@@ -98,17 +98,17 @@ class OrderSummuryActivity:BaseActivity() {
               val total=summaryModel.getOrder_total()!!.toFloat()-subtotalCharge
               val ordreTax=(summaryModel.getOrder_total()!!.toFloat()*summaryModel.getTax()!!.toFloat())/100
               val mainTotal=ordreTax+total+0.00
-              tvOrderDeliveryCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+"0.00"
-              tvDiscountOffer.text="-"+getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",subtotalCharge)
-              tvOrderTotalCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",mainTotal)
+              tvOrderDeliveryCharge.text="0.00"+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
+              tvDiscountOffer.text="-"+String.format(Locale.US,"%,.2f",subtotalCharge)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
+              tvOrderTotalCharge.text=String.format(Locale.US,"%,.2f",mainTotal)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
            }else{
               val orderTax:Float=(summaryModel.getOrder_total()!!.toFloat()*summaryModel.getTax()!!.toFloat())/100.toFloat()
-              tvOrderTotalPrice.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",summaryModel.getOrder_total()!!.toDouble())
-              tvOrderTaxPrice.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",orderTax)
+              tvOrderTotalPrice.text=String.format(Locale.US,"%,.2f",summaryModel.getOrder_total()!!.toDouble())+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
+              tvOrderTaxPrice.text=String.format(Locale.US,"%,.2f",orderTax)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
               tvTitleTex.text="Tax (${summaryModel.getTax()}%)"
-              tvOrderDeliveryCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+"0.00"
+              tvOrderDeliveryCharge.text="0.00"+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
               val totalprice=summaryModel.getOrder_total()!!.toFloat()+orderTax+0.00
-              tvOrderTotalCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",totalprice)
+              tvOrderTotalCharge.text=String.format(Locale.US,"%,.2f",totalprice)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
            }
         }
         cvDelivery.setOnClickListener {
@@ -123,17 +123,17 @@ class OrderSummuryActivity:BaseActivity() {
                 val total=summaryModel.getOrder_total()!!.toFloat()-subtotalCharge
                 val ordreTax=(summaryModel.getOrder_total()!!.toFloat()*summaryModel.getTax()!!.toFloat())/100
                 val mainTotal=ordreTax+total+summaryModel.getDelivery_charge()!!.toFloat()
-                tvOrderDeliveryCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",summaryModel.getDelivery_charge()!!.toDouble())
-                tvDiscountOffer.text="-"+getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",subtotalCharge)
-                tvOrderTotalCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",mainTotal)
+                tvOrderDeliveryCharge.text=String.format(Locale.US,"%,.2f",summaryModel.getDelivery_charge()!!.toDouble())+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
+                tvDiscountOffer.text="-"+String.format(Locale.US,"%,.2f",subtotalCharge)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
+                tvOrderTotalCharge.text=String.format(Locale.US,"%,.2f",mainTotal)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
             }else{
                 val orderTax:Float=(summaryModel.getOrder_total()!!.toFloat()*summaryModel.getTax()!!.toFloat())/100.toFloat()
-                tvOrderTotalPrice.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",summaryModel.getOrder_total()!!.toDouble())
-                tvOrderTaxPrice.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",orderTax)
+                tvOrderTotalPrice.text=String.format(Locale.US,"%,.2f",summaryModel.getOrder_total()!!.toDouble())+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
+                tvOrderTaxPrice.text=String.format(Locale.US,"%,.2f",orderTax)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
                 tvTitleTex.text="Tax (${summaryModel.getTax()}%)"
-                tvOrderDeliveryCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",summaryModel.getDelivery_charge()!!.toDouble())
+                tvOrderDeliveryCharge.text=String.format(Locale.US,"%,.2f",summaryModel.getDelivery_charge()!!.toDouble())+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
                 val totalprice=summaryModel.getOrder_total()!!.toFloat()+orderTax+summaryModel.getDelivery_charge()!!.toFloat()
-                tvOrderTotalCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",totalprice)
+                tvOrderTotalCharge.text=String.format(Locale.US,"%,.2f",totalprice)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
             }
 
 
@@ -149,13 +149,14 @@ class OrderSummuryActivity:BaseActivity() {
 
                  }else{
                      if(Common.isCheckNetwork(this@OrderSummuryActivity)){
-                        val map=HashMap<String,String>()
-                        map["pincode"]=edPinCode.text.toString()
-                        callApiCheckPinCode(map)
+                         val map=HashMap<String,String>()
+
+                         callApiCheckPinCode(map)
                      }else{
-                        alertErrorOrValidationDialog(this@OrderSummuryActivity,resources.getString(R.string.no_internet))
+                         alertErrorOrValidationDialog(this@OrderSummuryActivity,resources.getString(R.string.no_internet))
                      }
                  }
+
              }else if(select_Delivery==2){
                  if(summaryModel.getOrder_total()!!.toDouble()>getStringPref(this@OrderSummuryActivity,isMiniMum)!!.toDouble()&&summaryModel.getOrder_total()!!.toDouble()<getStringPref(this@OrderSummuryActivity,isMaximum)!!.toDouble()){
                     val intent=Intent(this@OrderSummuryActivity,PaymentPayActivity::class.java)
@@ -208,22 +209,22 @@ class OrderSummuryActivity:BaseActivity() {
                 rlOffer.visibility=View.GONE
                 if(select_Delivery==1){
                     val orderTax:Float=(summaryModel.getOrder_total()!!.toFloat()*summaryModel.getTax()!!.toFloat())/100
-                    tvOrderTotalPrice.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",summaryModel.getOrder_total()!!.toDouble())
-                    tvOrderTaxPrice.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",orderTax)
+                    tvOrderTotalPrice.text=String.format(Locale.US,"%,.2f",summaryModel.getOrder_total()!!.toDouble())+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
+                    tvOrderTaxPrice.text=String.format(Locale.US,"%,.2f",orderTax)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
                     tvTitleTex.text="Tax (${summaryModel.getTax()}%)"
-                    tvOrderDeliveryCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",summaryModel.getDelivery_charge()!!.toDouble())
+                    tvOrderDeliveryCharge.text=String.format(Locale.US,"%,.2f",summaryModel.getDelivery_charge()!!.toDouble())+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
                     val totalprice=summaryModel.getOrder_total()!!.toDouble()+orderTax+summaryModel.getDelivery_charge()!!.toDouble()
-                    tvOrderTotalCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",totalprice)
+                    tvOrderTotalCharge.text=String.format(Locale.US,"%,.2f",totalprice)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
                     discountPer="0"
                     discountAmount="0.00"
                 }else{
                     val orderTax:Float=(summaryModel.getOrder_total()!!.toFloat()*summaryModel.getTax()!!.toFloat())/100
-                    tvOrderTotalPrice.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",summaryModel.getOrder_total()!!.toDouble())
-                    tvOrderTaxPrice.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",orderTax)
+                    tvOrderTotalPrice.text=String.format(Locale.US,"%,.2f",summaryModel.getOrder_total()!!.toDouble())+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
+                    tvOrderTaxPrice.text=String.format(Locale.US,"%,.2f",orderTax)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
                     tvTitleTex.text="Tax (${summaryModel.getTax()}%)"
-                    tvOrderDeliveryCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",0.00)
+                    tvOrderDeliveryCharge.text=String.format(Locale.US,"%,.2f",0.00)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
                     val totalprice=summaryModel.getOrder_total()!!.toDouble()+orderTax+0.00
-                    tvOrderTotalCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",totalprice)
+                    tvOrderTotalCharge.text=String.format(Locale.US,"%,.2f",totalprice)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
                     discountPer="0"
                     discountAmount="0.00"
                 }
@@ -352,8 +353,8 @@ class OrderSummuryActivity:BaseActivity() {
                             val total=summaryModel.getOrder_total()!!.toFloat()-subtotalCharge
                             val ordreTax=(summaryModel.getOrder_total()!!.toFloat()*summaryModel.getTax()!!.toFloat())/100
                             val mainTotal=ordreTax+total+summaryModel.getDelivery_charge()!!.toFloat()
-                            tvDiscountOffer.text="-"+getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",subtotalCharge)
-                            tvOrderTotalCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",mainTotal)
+                            tvDiscountOffer.text="-"+String.format(Locale.US,"%,.2f",subtotalCharge)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
+                            tvOrderTotalCharge.text=String.format(Locale.US,"%,.2f",mainTotal)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
                             discountAmount=subtotalCharge.toString()
                             discountPer=restResponce.getData()!!.getOffer_amount()!!
                         }else{
@@ -361,8 +362,8 @@ class OrderSummuryActivity:BaseActivity() {
                             val total=summaryModel.getOrder_total()!!.toFloat()-subtotalCharge
                             val ordreTax=(summaryModel.getOrder_total()!!.toFloat()*summaryModel.getTax()!!.toFloat())/100
                             val mainTotal=ordreTax+total+0.00
-                            tvDiscountOffer.text="-"+getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",subtotalCharge)
-                            tvOrderTotalCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",mainTotal)
+                            tvDiscountOffer.text="-"+String.format(Locale.US,"%,.2f",subtotalCharge)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
+                            tvOrderTotalCharge.text=String.format(Locale.US,"%,.2f",mainTotal)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
                             discountAmount=subtotalCharge.toString()
                             discountPer=restResponce.getData()!!.getOffer_amount()!!
                         }
@@ -399,12 +400,12 @@ class OrderSummuryActivity:BaseActivity() {
         summaryModel=summary!!
         Common.getLog("tax",summary.getTax().toString())
         val orderTax:Float=(summary.getOrder_total()!!.toFloat()*summary.getTax()!!.toFloat())/100.toFloat()
-        tvOrderTotalPrice.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",summary.getOrder_total()!!.toDouble())
-        tvOrderTaxPrice.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",orderTax)
+        tvOrderTotalPrice.text=String.format(Locale.US,"%,.2f",summary.getOrder_total()!!.toDouble())+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
+        tvOrderTaxPrice.text=String.format(Locale.US,"%,.2f",orderTax)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
         tvTitleTex.text="Tax (${summary.getTax()}%)"
-        tvOrderDeliveryCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",summaryModel.getDelivery_charge()!!.toDouble())
+        tvOrderDeliveryCharge.text=String.format(Locale.US,"%,.2f",summaryModel.getDelivery_charge()!!.toDouble())+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
         val totalprice=summary.getOrder_total()!!.toFloat()+orderTax+summary.getDelivery_charge()!!.toFloat()
-        tvOrderTotalCharge.text=getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",totalprice)
+        tvOrderTotalCharge.text=String.format(Locale.US,"%,.2f",totalprice)+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
     }
 
     fun setFoodCategoryAdaptor(orderHistoryList: ArrayList<OrderSummaryModel>) {
@@ -426,7 +427,7 @@ class OrderSummuryActivity:BaseActivity() {
                         .placeholder(resources.getDrawable(R.drawable.placeholder)).centerCrop()
                         .into(ivFoodItem)
                     tvOrderFoodName.text = orderHistoryList.get(position).getItem_name()
-                    tvPrice.text = getStringPref(this@OrderSummuryActivity,isCurrancy)+String.format(Locale.US,"%,.2f",orderHistoryList.get(position).getTotal_price()!!.toDouble())
+                    tvPrice.text = String.format(Locale.US,"%,.2f",orderHistoryList.get(position).getTotal_price()!!.toDouble())+' '+getStringPref(this@OrderSummuryActivity,isCurrancy)
                     tvQtyNumber.text ="QTY : ${orderHistoryList.get(position).getQty()}"
 
                     if(orderHistoryList.get(position).getAddons().size>0){
@@ -441,8 +442,11 @@ class OrderSummuryActivity:BaseActivity() {
                     }
 
                     holder.itemView.tvAddons.setOnClickListener {
-                      if(orderHistoryList.get(position).getAddons().size>0){
-                         Common.openDialogSelectedAddons(this@OrderSummuryActivity,orderHistoryList.get(position).getAddons())
+
+                        var cartitem=dbHelper.viewCart()
+
+                      if(cartitem.get(position).getAddons().size>0){
+                         Common.openDialogSelectedAddons(this@OrderSummuryActivity,cartitem.get(position).getAddons())
                       }
                     }
 
@@ -550,8 +554,9 @@ class OrderSummuryActivity:BaseActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == AutocompleteActivity.RESULT_OK) {
+                Common.getLog("api","thanh cong")
                 val place = Autocomplete.getPlaceFromIntent(data!!)
-                edAddress.text=place.getAddress()
+                edAddress.setText(place.getAddress())
                 val latLng: String = place.latLng.toString()
                 val tempArray = latLng.substring(latLng.indexOf("(") + 1, latLng.lastIndexOf(")")).split(",")
                         .toTypedArray()

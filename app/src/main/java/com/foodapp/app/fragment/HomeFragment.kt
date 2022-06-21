@@ -709,7 +709,7 @@ class HomeFragment : BaseFragmnet() {
 
             dismissLoadingProgress()
 
-                tvCount!!.text =dbHelper?.viewCart()?.size.toString()
+                tvCount!!.text =dbHelper?.viewCart()?.size.toString()?: "0"
 
 
     }

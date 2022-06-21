@@ -76,7 +76,7 @@ dependencies {
 
     //Payment GateWay
     implementation 'com.razorpay:checkout:1.5.16'
-    implementation 'com.stripe:stripe-android:12.5.0'
+//    implementation 'com.stripe:stripe-android:12.5.0'
 
     //Firebase Services
     implementation 'com.google.firebase:firebase-core:17.5.0' // get Firebase Token

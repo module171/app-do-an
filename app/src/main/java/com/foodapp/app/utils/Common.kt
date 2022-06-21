@@ -34,7 +34,9 @@ import com.foodapp.app.utils.SharePreference.Companion.isCurrancy
 import com.foodapp.app.utils.SharePreference.Companion.setBooleanPref
 import com.foodapp.app.utils.SharePreference.Companion.setStringPref
 import com.androidadvance.topsnackbar.TSnackbar
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.dlg_setting.view.*
+import kotlinx.android.synthetic.main.row_addons.view.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -305,15 +307,19 @@ object Common {
                 `val`: AddonsModel,
                 position: Int
             ) {
+                var tvqly:TextView=holder!!.itemView.findViewById(R.id.tvFoodQty2)
                 val tvAddonsName: TextView = holder!!.itemView.findViewById(R.id.tvAddonsName)
                 val tvAddonsPrice: TextView = holder.itemView.findViewById(R.id.tvAddonsPrice)
                 val ivCancel: ImageView = holder.itemView.findViewById(R.id.ivCancel)
                 ivCancel.visibility= View.GONE
                 tvAddonsName.text = orderHistoryList.get(position).getName()
-                if(String.format(Locale.US,"%.2f",orderHistoryList[position].getPrice()!!.toDouble())=="0.00"){
+                tvqly.text="x"+orderHistoryList.get(position).getsoluong()
+                Glide.with(activity).load(orderHistoryList.get(position).getimageadd()).into(holder!!.itemView.ivimageaddon)
+
+                if(String.format(Locale.US,"%.2f",orderHistoryList[position].gettotalPrice()!!.toDouble())=="0.00"){
                     tvAddonsPrice.text = "Free"
                 }else{
-                    tvAddonsPrice.text = getStringPref(activity,isCurrancy)+String.format(Locale.US,"%,.02f", orderHistoryList.get(position).getPrice()!!.toDouble())
+                    tvAddonsPrice.text = orderHistoryList.get(position).gettotalPrice()!!.toDouble().toString()
                 }
 
             }
@@ -411,7 +417,7 @@ object Common {
         }
     }
     fun getPrice(price:Double,tvPrice:TextView,activity: Activity){
-        tvPrice.text = getStringPref(activity,isCurrancy)+String.format(Locale.US,"%,.2f",price)
+        tvPrice.text = String.format(Locale.US,"%,.2f",price)+' '+getStringPref(activity,isCurrancy)
     }
 
 }

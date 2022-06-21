@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
@@ -18,9 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.foodapp.app.R
-import com.foodapp.app.api.ApiClient
-import com.foodapp.app.api.ListResponse
-import com.foodapp.app.api.SingleResponse
 import com.foodapp.app.base.BaseActivity
 import com.foodapp.app.base.BaseAdaptor
 import com.foodapp.app.model.CartItemModel
@@ -34,11 +30,9 @@ import com.foodapp.app.utils.Common.isCheckNetwork
 import com.foodapp.app.utils.Common.showLoadingProgress
 import com.foodapp.app.utils.SharePreference
 import com.foodapp.app.utils.SharePreference.Companion.getStringPref
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_cart.*
 import kotlinx.android.synthetic.main.row_cart.view.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -101,6 +95,7 @@ class CartActivity : BaseActivity() {
                 tvNoDataFound.visibility = View.GONE
                 tvCheckout.visibility = View.VISIBLE
                 cartItem=dbHelper.viewCart()
+                Common.getLog("Data", "===" + Gson().toJson(cartItem).toString() + "")
                 setFoodCartAdaptor(cartItem!!)
             } else {
                 rvCartFood.visibility = View.GONE
@@ -157,7 +152,7 @@ class CartActivity : BaseActivity() {
               position: Int
             ) {
                 holder!!.itemView.tvFoodName.text = cartItem!!.get(position).getItem_name()
-                holder.itemView.tvFoodPrice.text =Common.getCurrancy(this@CartActivity)+String.format(Locale.US,"%,.2f",cartItem!!.get(position).getPrice()!!.toDouble())
+                holder.itemView.tvFoodPrice.text =String.format(Locale.US,"%,.2f",cartItem!!.get(position).getPrice()!!.toDouble())+' '+Common.getCurrancy(this@CartActivity)
                 holder.itemView.tvFoodQty.text = cartItem!!.get(position).getQty().toString()
                 Glide.with(this@CartActivity).load(cartItem!!.get(position).getimage()).into( holder.itemView.ivFoodCart)
 
@@ -166,7 +161,7 @@ class CartActivity : BaseActivity() {
                 }else{
                     holder.itemView.tvAddons.backgroundTintList= ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
                 }
-                if(cartItem!!.get(position).getItem_notes()==null){
+                if(cartItem!!.get(position).getItem_notes()==""){
                   holder.itemView.tvNotes.backgroundTintList= ColorStateList.valueOf(resources.getColor(R.color.gray))
                 }else{
                   holder.itemView.tvNotes.backgroundTintList= ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
@@ -179,7 +174,7 @@ class CartActivity : BaseActivity() {
                 }
                   item_price=cartItem!!.get(position).getPrice()!!.toDouble()
                 holder.itemView.tvNotes.setOnClickListener {
-                  if(cartItem!!.get(position).getItem_notes()!=null){
+                  if(cartItem!!.get(position).getItem_notes()!=""){
                     Common.alertNotesDialog(this@CartActivity,cartItem!!.get(position).getItem_notes())
                   }
                 }
@@ -197,7 +192,7 @@ class CartActivity : BaseActivity() {
 
                 holder.itemView.ivMinus.setOnClickListener {
                   if(cartItem!!.get(position).getQty()!!.toInt() > 1){
-                    holder.itemView.ivMinus.isClickable =true
+
                     getLog("Qty>>",cartItem!!.get(position).getQty().toString())
                     if (isCheckNetwork(this@CartActivity)) {
                       callApiCartQTYUpdate(cartItemList.get(position),position,false)
@@ -259,7 +254,7 @@ class CartActivity : BaseActivity() {
         val map = HashMap<String, String>()
 //        map.put("cart_id",cartModel.getId()!!)
 //        map.put("item_id",cartModel.getItem_id()!!)
-        var status=dbHelper.updateCart(cartModel.getId().toString(),qty,(cartModel.getitemm_price()!!.toDouble() * qty).toString())
+        var status=dbHelper.updateCart(cartModel.getId().toString(),qty,(cartModel.getPrice()!!.toDouble() * qty).toString())
         callApiCart(true)
 //        map.put("qty",qty.toString())
 //        map.put("user_id", getStringPref(this@CartActivity, SharePreference.userId)!!)

@@ -62,6 +62,8 @@ interface ApiInterface {
     fun setAddToCart(@Body map: HashMap<String, String>):Call<SingleResponse>
     @POST("deleteorder")
     fun deleteOrder(@Body map: HashMap<String, String>):Call<SingleResponse>
+    @POST("updatestatus")
+    fun updatestatus(@Body map: HashMap<String, String>):Call<SingleResponse>
     //QtyUpdate Api 15
     @POST("qtyupdate")
     fun setQtyUpdate(@Body map: HashMap<String, String>):Call<SingleResponse>

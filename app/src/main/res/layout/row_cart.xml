@@ -87,7 +87,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         fontPath="@string/font_medium"
-                        android:text="Addons"
+                        android:text="Topping"
                         android:padding="@dimen/_3sdp"
                         android:id="@+id/tvAddons"
                         android:background="@drawable/bg_orangecorner_10"

@@ -8,14 +8,11 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +22,6 @@ import com.foodapp.app.R
 import com.foodapp.app.adaptor.ImageSliderAdaptor
 import com.foodapp.app.api.ApiClient
 import com.foodapp.app.api.RestResponse
-import com.foodapp.app.api.SingleResponse
 import com.foodapp.app.base.BaseActivity
 import com.foodapp.app.base.BaseAdaptor
 import com.foodapp.app.utils.Common
@@ -38,10 +34,12 @@ import com.foodapp.app.utils.SharePreference.Companion.userId
 import com.bumptech.glide.Glide
 import com.foodapp.app.model.*
 import com.foodapp.app.sqlite.DatabaseHandler
+import com.foodapp.app.utils.Common.getLog
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_foodorderdetail.*
+import kotlinx.android.synthetic.main.row_addons.view.*
+import kotlinx.android.synthetic.main.row_cart.view.*
 import kotlinx.android.synthetic.main.row_ingrediants.view.*
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -229,6 +227,7 @@ class FoodDetailActivity : BaseActivity() {
     ) {
         showLoadingProgress(this@FoodDetailActivity)
         val price = tvAddtoCart.text.toString().replace(resources.getString(R.string.addtocart)+" "+getStringPref(this@FoodDetailActivity, isCurrancy), "")
+
         val actulePrice=price.replace(",", "")
         Common.getLog("getPrice", actulePrice)
 
@@ -237,14 +236,14 @@ class FoodDetailActivity : BaseActivity() {
             Integer.parseInt(getStringPref(this@FoodDetailActivity, userId)!!),
             itemDetailModel.getItem_name(),
             itemDetailModel.getItem_price(),
-            itemDetailModel.getItem_price(),
+            actulePrice,
             strAddonsGetId,
             Integer.parseInt(tvFoodQty.text.toString()),
             edNotes.text.toString(),
             intent.getStringExtra("itemimage")!!
 
             );
-      var status= dbHelper.addCart(cartmodel)
+      var status= dbHelper.addCart(cartmodel,listAddons)
 
 
 
@@ -312,14 +311,14 @@ class FoodDetailActivity : BaseActivity() {
                     }
                     val getPrice = qty * (price + itemModel!!.getItem_price()!!.toDouble())
                     tvAddtoCart.text =
-                        resources.getString(R.string.addtocart)+" "+ getStringPref(this@FoodDetailActivity, isCurrancy).plus(
-                            String.format(Locale.US,"%,.2f",getPrice)
+                        resources.getString(R.string.addtocart)+" "+String.format(Locale.US,"%,.2f",getPrice).plus(
+                            getStringPref(this@FoodDetailActivity, isCurrancy)
                         )
                 } else {
                     val getPrice = qty * itemModel!!.getItem_price()!!.toDouble()
                     tvAddtoCart.text =
-                        resources.getString(R.string.addtocart)+" "+ getStringPref(this@FoodDetailActivity, isCurrancy).plus(
-                            String.format(Locale.US,"%,.2f",getPrice)
+                        resources.getString(R.string.addtocart)+" "+String.format(Locale.US,"%,.2f",getPrice).plus(
+                            getStringPref(this@FoodDetailActivity, isCurrancy)
                         )
                 }
             }
@@ -335,16 +334,16 @@ class FoodDetailActivity : BaseActivity() {
                         price = price + listSeletecAddons.get(i).getPrice()!!.toDouble()
                     }
                     val getPrice = qty * (price + itemModel!!.getItem_price()!!.toDouble())
-                    tvAddtoCart.text =resources.getString(R.string.addtocart)+" "+ getStringPref(
-                        this@FoodDetailActivity,
-                        isCurrancy
-                    ).plus(String.format(Locale.US,"%,.2f",getPrice))
+                    tvAddtoCart.text =
+                        resources.getString(R.string.addtocart)+" "+String.format(Locale.US,"%,.2f",getPrice).plus(
+                            getStringPref(this@FoodDetailActivity, isCurrancy)
+                        )
                 } else {
                     val getPrice = qty * itemModel!!.getItem_price()!!.toDouble()
-                    tvAddtoCart.text =  resources.getString(R.string.addtocart)+" "+ getStringPref(
-                        this@FoodDetailActivity,
-                        isCurrancy
-                    ).plus(String.format(Locale.US,"%,.2f",getPrice))
+                    tvAddtoCart.text =
+                        resources.getString(R.string.addtocart)+" "+String.format(Locale.US,"%,.2f",getPrice).plus(
+                            getStringPref(this@FoodDetailActivity, isCurrancy)
+                        )
                 }
             }else{
                 alertErrorOrValidationDialog(this@FoodDetailActivity,"Maximum quantity allowed ${getStringPref(this@FoodDetailActivity,SharePreference.isMiniMumQty)}")
@@ -442,11 +441,11 @@ class FoodDetailActivity : BaseActivity() {
                     return null
                 }
             }
-        rvIngredients.adapter = cartItemAdapter
-        rvIngredients.layoutManager =
-            LinearLayoutManager(this@FoodDetailActivity, LinearLayoutManager.HORIZONTAL, false)
-        rvIngredients.itemAnimator = DefaultItemAnimator()
-        rvIngredients.isNestedScrollingEnabled = true
+//        rvIngredients.adapter = cartItemAdapter
+//        rvIngredients.layoutManager =
+//            LinearLayoutManager(this@FoodDetailActivity, LinearLayoutManager.HORIZONTAL, false)
+//        rvIngredients.itemAnimator = DefaultItemAnimator()
+//        rvIngredients.isNestedScrollingEnabled = true9
     }
 
 
@@ -486,7 +485,7 @@ class FoodDetailActivity : BaseActivity() {
             listSeletecAddons = setSelectedAddonsAdaptor(addonsSelectedList)
             var price = 0.0
             for (i in 0 until listSeletecAddons.size) {
-                price = price + listSeletecAddons.get(i).getPrice()!!.toDouble()
+                price = price + listSeletecAddons.get(i).gettotalPrice()!!.toDouble()
             }
             val getPrice =
                 tvFoodQty.text.toString().toInt() * (price + itemModel!!.getItem_price()!!
@@ -504,6 +503,7 @@ class FoodDetailActivity : BaseActivity() {
         addonsList: ArrayList<AddonsModel>
     ): ArrayList<AddonsModel> {
         var getAddonsList = addonsList
+        var getAddonsList1=addonsList
         Common.getLog("getAddonsData", "===" + Gson().toJson(getAddonsList).toString() + "")
         val addonsItemAdapter =
             object : BaseAdaptor<AddonsModel>(this@FoodDetailActivity, getAddonsList) {
@@ -513,6 +513,8 @@ class FoodDetailActivity : BaseActivity() {
                     `val`: AddonsModel,
                     position: Int
                 ) {
+                    Glide.with(this@FoodDetailActivity).load(getAddonsList[position].getImages()!!.getItemimageadd()).into(holder!!.itemView.ivimageaddon)
+                    Common.getLog("image", getAddonsList[position].getImages().toString())
                     val tvAddonsName: TextView = holder!!.itemView.findViewById(R.id.tvAddonsName)
                     val tvAddonsPrice: TextView = holder.itemView.findViewById(R.id.tvAddonsPrice)
                     val ivCheck: ImageView = holder.itemView.findViewById(R.id.ivCheck)
@@ -520,11 +522,44 @@ class FoodDetailActivity : BaseActivity() {
                     if(String.format(Locale.US,"%.2f",getAddonsList[position].getPrice()!!.toDouble())=="0.00"){
                         tvAddonsPrice.text ="Free"
                     }else{
-                        tvAddonsPrice.text = getStringPref(
-                            this@FoodDetailActivity,
-                            isCurrancy
-                        )+String.format(Locale.US,"%,.2f",getAddonsList[position].getPrice()!!.toDouble())
+                        tvAddonsPrice.text =(getAddonsList[position].getPrice()!!.toDouble() * Integer.parseInt(holder.itemView.tvFoodQty1.text.toString())).toString()
                     }
+
+                    holder.itemView.ivPlus1.setOnClickListener {
+                        holder.itemView.ivPlus1.isClickable =true
+                        var soluong=Integer.parseInt(holder.itemView.tvFoodQty1.text.toString())+1
+
+                        var gia=0.0;
+                         gia=soluong * getAddonsList[position].getPrice()!!.toDouble()
+                        holder.itemView.tvFoodQty1.text=soluong.toString()
+                        holder.itemView.tvAddonsPrice.text=gia.toString()
+
+//                        getAddonsList[position].setPrice(gia.toString())
+                        getLog("price",getAddonsList[position].getPrice().toString())
+
+//                        notifyDataSetChanged()
+                    }
+                    holder.itemView.ivMinus1.setOnClickListener {
+                        if(Integer.parseInt(holder.itemView.tvFoodQty1.text.toString())>1){
+
+                            holder.itemView.ivPlus1.isClickable =true
+                            var soluong=Integer.parseInt(holder.itemView.tvFoodQty1.text.toString())-1
+                            var gia=soluong * getAddonsList[position].getPrice()!!.toDouble()
+
+                            holder.itemView.tvFoodQty1.text=soluong.toString()
+                            holder.itemView.tvAddonsPrice.text=gia.toString()
+
+//                            getAddonsList[position].setPrice(gia.toString())
+//                            getLog("price",getAddonsList1[position].getPrice().toString())
+//                            notifyDataSetChanged()
+                        }else if(Integer.parseInt(holder.itemView.tvFoodQty1.text.toString())<1){
+
+                            holder.itemView.ivMinus1.isClickable =false
+                        }
+
+
+                    }
+
                   /*  tvAddonsPrice.text = getStringPref(
                         this@FoodDetailActivity,
                         isCurrancy
@@ -547,6 +582,9 @@ class FoodDetailActivity : BaseActivity() {
                             ivCheck.imageTintList =
                                 ColorStateList.valueOf(ResourcesCompat.getColor(resources,R.color.colorPrimary,null))
                             getAddonsList[position].setSelectAddons(false)
+                            getAddonsList[position].settotalPrice(holder.itemView.tvAddonsPrice.text.toString())
+                            getAddonsList[position].setsoluong(holder.itemView.tvFoodQty1.text.toString())
+                            getLog("totalprice",getAddonsList[position].getsoluong().toString())
                             notifyDataSetChanged()
                         } else {
                             Common.getLog("check",getAddonsList[position].isSelectAddons()!!.toString())
@@ -555,6 +593,9 @@ class FoodDetailActivity : BaseActivity() {
                             ivCheck.imageTintList =
                                 ColorStateList.valueOf(ResourcesCompat.getColor(resources,R.color.colorPrimary,null))
                             getAddonsList[position].setSelectAddons(true)
+                            getAddonsList[position].settotalPrice(holder.itemView.tvAddonsPrice.text.toString())
+                            getAddonsList[position].setsoluong(holder.itemView.tvFoodQty1.text.toString())
+                            getLog("totalprice",getAddonsList[position].getsoluong().toString())
                             notifyDataSetChanged()
                         }
                     }
@@ -585,17 +626,19 @@ class FoodDetailActivity : BaseActivity() {
                     `val`: AddonsModel,
                     position: Int
                 ) {
+
+                    Glide.with(this@FoodDetailActivity).load(lisAddons[position].getImages()!!.getItemimageadd()).into(holder!!.itemView.ivimageaddon)
+
                     val tvAddonsName: TextView = holder!!.itemView.findViewById(R.id.tvAddonsName)
                     val tvAddonsPrice: TextView = holder.itemView.findViewById(R.id.tvAddonsPrice)
+                    val tvqly: TextView = holder.itemView.findViewById(R.id.tvFoodQty2)
                     val ivCancel: ImageView = holder.itemView.findViewById(R.id.ivCancel)
                     tvAddonsName.text = lisAddons[position].getName()
                     if(String.format(Locale.US,"%,.2f",lisAddons[position].getPrice()!!.toDouble())=="0.00"){
                         tvAddonsPrice.text ="Free"
                     }else{
-                        tvAddonsPrice.text = getStringPref(
-                            this@FoodDetailActivity,
-                            isCurrancy
-                        )+String.format(Locale.US,"%,.2f",lisAddons[position].getPrice()!!.toDouble())
+                        tvAddonsPrice.text =lisAddons[position].gettotalPrice()
+                        tvqly.text="x"+lisAddons[position].getsoluong()
                     }
 
                     ivCancel.setOnClickListener {
@@ -608,14 +651,14 @@ class FoodDetailActivity : BaseActivity() {
                                 price = price + getSelectedlist.get(i).getPrice()!!.toDouble()
                             }
                             val getPrice:Double = tvFoodQty.text.toString().toInt()*(price + itemModel!!.getItem_price()!!.toDouble())
-                            tvAddtoCart.text = resources.getString(R.string.addtocart)+" "+getStringPref(this@FoodDetailActivity,isCurrancy).plus(String.format(Locale.US,"%,.2f",getPrice))
+                            tvAddtoCart.text = resources.getString(R.string.addtocart)+" "+String.format(Locale.US,"%,.2f",getPrice).plus(getStringPref(this@FoodDetailActivity,isCurrancy))
                         } else {
                             rvAddons.visibility = View.GONE
                             tvNoDataAddonsFound.visibility = View.VISIBLE
                             val getPrice:Double =
                                 tvFoodQty.text.toString().toInt() * itemModel!!.getItem_price()!!
                                     .toDouble()
-                            tvAddtoCart.text = resources.getString(R.string.addtocart)+" "+getStringPref(this@FoodDetailActivity,isCurrancy).plus(String.format(Locale.US,"%,.2f",getPrice))
+                            tvAddtoCart.text = resources.getString(R.string.addtocart)+" "+String.format(Locale.US,"%,.2f",getPrice).plus(getStringPref(this@FoodDetailActivity,isCurrancy))
 
                         }
                         notifyDataSetChanged()

@@ -12,10 +12,10 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
     var ip:String?=null
-    val BASE_URL="http://192.168.135.12:82/admin/api/"
+    val BASE_URL="http://www.fastfood171.site/api/"
     val PrivicyPolicy="http://192.168.165.12:82/food-admin/admin/privacy-policy"
     val termscondition="http://192.168.1.16:82/food-admin/termscondition"
-    val MapKey="AIzaSyDCT1ergyIWDnv6lqQZDMyz2oRroy_GNOI"
+    val MapKey="AIzaSyDnldw8U5Cwt-xZxKL-Qp78MYKeqVXdmtY"
     val Stripe="Your_stripe_public_key"
 
     var TIMEOUT: Long = 60 * 2 * 1.toLong()

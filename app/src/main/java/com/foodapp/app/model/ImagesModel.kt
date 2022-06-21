@@ -2,7 +2,7 @@ package com.foodapp.app.model
 
 class ImagesModel {
     private var itemimage: String? = null
-
+    private var image: String? = null
     private var item_id: String? = null
 
     fun getItemimage(): String? {
@@ -11,6 +11,13 @@ class ImagesModel {
 
     fun setItemimage(itemimage: String?) {
         this.itemimage = itemimage
+    }
+    fun getItemimageadd(): String? {
+        return image
+    }
+
+    fun setItemimageadd(itemimage: String?) {
+        this.image = itemimage
     }
 
     fun getItem_id(): String? {
